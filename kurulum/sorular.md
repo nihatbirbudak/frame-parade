@@ -150,6 +150,10 @@ Eşlemeler gerçek `kanal.json` şemasına dayanır. Yalnız listelenen mevcut a
 
 **Kayıt / koşullar:** yonetim/ROLLER.md: yönetici, yazar, üretim, kontrol ve yayın sorumlusu. Roller otomatik olarak ayrı ücretli oturum açmaz. İkinci model yoksa metin ve tasarım sırayla yapılır.
 
+## 12–15 için verilen cevapları kullan
+
+Bu konuları tek bir yayın ve araçlar kontrol adımı olarak ele al; yalnız eksik kararı, bir seferde bir tane sor. Kullanıcı "yayından önce inceleme" ve "ekleri atla" dediyse 12, 13 ve 14'ü yeniden sorma. Yerel önizlemeyi kaydet, YouTube bağlantısını sonraya bırak, günlük ölçüm ve ajan postasını kapalı tut; verilmiş kullanım sınırlarını kullan. 15'teki makine denetimlerini yine yerel olarak yap. Sınırı yalnız sıradaki somut işi etkileyen eksik bir karar varsa sor; plan veya kota uydurma. Bu kayıt yükleme veya harcama izni vermez.
+
 ## G. Yayın ve onay
 
 ### 12 — İnceleme yöntemi · Zorunlu

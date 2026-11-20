@@ -4,7 +4,7 @@ Yapay zekâ ajanlarıyla çalışan video stüdyosu. Tek prompt ile kurulum.
 
 [English](README.md)
 
-**Durum: hazırlık aşaması.** Bu belge ilk sürümün taslağıdır. Dağıtılacak iskeletin temiz klasörde kurulumu henüz doğrulanmadı. Aşağıdaki özellikler ilk sürümün hedef kapsamıdır. Depo şu anda gizlidir; temiz klasörde kurulum denemesinden ve proje sahibinin onayından sonra herkese açılacaktır.
+**Durum: temiz klasör kurulumu doğrulandı (Windows, 20 Kasım 2026; macOS ve Linux henüz denenmedi).** Denemede Node.js, Git ve Chrome önceden kuruluydu; yerel sessiz örnek üretildi. Eksik araçların kurulumu bu denemede sınanmadı.
 
 ## Ne işe yarar?
 
@@ -26,7 +26,7 @@ Kendi metinlerinizi, çekimlerinizi ve kimliğinizi eklersiniz. Dağıtılan kit
 | [Claude Code](https://code.claude.com/docs/en/setup) ve kullanılabilir erişim | Kurulum görüşmesi ve proje içinde çalışma. |
 | Node.js 20+ ve npm | package.json gereksinimi; denetimler KURULUM.md içinde. |
 | ffmpeg-static (npm bağımlılıklarıyla kurulur) | Render için ffmpeg sağlar. ffprobe ayrıdır; sessiz örnek için gerekli değildir. |
-| Google Chrome | Animasyonları masaüstünü kullanmadan, headless olarak işleme. |
+| Google Chrome veya kitin algıladığı uyumlu bir tarayıcı | Animasyonları masaüstünü kullanmadan işleme; bildirilen denemede Chrome kullanıldı. |
 | Git | Tek prompt akışında depoyu indirme. |
 | İnternet ve boş disk alanı | Depo/bağımlılık indirme ve yerel çıktı dosyaları. Gereksinim denetimde raporlanır. |
 
@@ -36,16 +36,20 @@ Node.js bu kitin araçları içindir; Claude Code'un bütün kurulum yöntemleri
 
 ## Tek prompt ile kurulum
 
+Ücretli müşteri işi lisans dışı; ayrıntı [LICENSE §4](LICENSE).
+
 1. Boş bir proje klasörü oluşturun ve Claude Code'u burada açın.
-2. Gizli depoya erişiminiz varsa kurulum denemesi için aşağıdaki metni yapıştırın. Herkese açık sürüm henüz hazır değil.
+2. Aşağıda bağlantısı bulunan Frame Parade deposunu açın ve kurulum metnini Claude Code'a yapıştırın. Depoya erişilemiyorsa durup erişimi kontrol edin; başka bir indirme kaynağı seçmeyin.
 3. Soruları sırayla yanıtlayın. İsteğe bağlıları atlayabilir, önerilen stili değiştirebilirsiniz.
 4. Kanal adınızla üretilen 10 saniyelik dikey denemeyi inceleyin. Ses hazır değilse deneme sessiz olacaktır.
 
 ```text
 Bu boş proje klasörüne https://github.com/nihatbirbudak/frame-parade deposundaki Frame Parade video kitini kur.
 
+Yapay zekâya yeni başlayan biri olduğumu varsay. Her adımı sade dille açıkla, bir seferde tek iş iste ve teknik terimleri ilk kullandığında açıkla. Ücretli müşteri işi lisans dışı; ayrıntı LICENSE §4.
+
 1. Hedef boş değilse veya depoya erişilemiyorsa dur ve durumu açıkla. Dosya silme, üzerine yazma veya başka depo seçme. Git yoksa kurulum yolunu göster; kurulduktan sonra devam et. Depoyu bu klasöre indir; önce depo kökündeki KURULUM.md, CLAUDE.md, KURALLAR.md ve LICENSE dosyalarını oku. Eksik rehber veya çelişki varsa varsayarak ilerleme.
-2. İşletim sistemi, boş disk, Node.js 20+/npm, Chrome ve Git gereksinimlerini denetle. Paketle gelen ffmpeg kurulumunu ve kontrolünü rehbere göre yap; ffprobe yalnız seçilen sonraki bir iş akışı gerektirirse denetlenir. Eksikleri ve yapılacak kurulumu göster; sistem yazılımı kurmadan veya paket kurulum betiklerini çalıştırmadan önce onayımı al. Yalnız rehberdeki mevcut komutları kullan; komut uydurma.
+2. İşletim sistemi, boş disk, Node.js 20+/npm, Chrome veya uyumlu bir tarayıcı ve Git gereksinimlerini denetle. Paketle gelen ffmpeg kurulumunu ve kontrolünü rehbere göre yap; ffprobe yalnız seçilen sonraki bir iş akışı gerektirirse denetlenir. Eksikleri ve yapılacak kurulumu göster; sistem yazılımı kurmadan veya paket kurulum betiklerini çalıştırmadan önce onayımı al. Yalnız rehberdeki mevcut komutları kullan; komut uydurma.
 3. KURULUM.md akışında Türkçe için kurulum/sorular.md, İngilizce için kurulum/questions.md kullan; kullanıcının dilinde, bir mesajda tek konu sor. Daha önce verdiğim cevabı yeniden isteme. İsteğe bağlıları atlayabilirim; eksik tercihler için önerini açıkça belirt. Mevcut çalışma ayarlarını kanal.json içine; kimlik, referans ve rolleri yonetim/VIDEO-KIMLIGI.md, yonetim/referanslar.md ve yonetim/ROLLER.md içine kaydet. Gerçek şemaya uy; JSON alanı uydurma. Kaynak dosyalarımı değiştirme.
 4. Verdiğim referansları erişebildiğin ölçüde incele; erişemediğini belirt. Kısa bir stil kartı sun ve onayımı al. Anahtar veya jeton isteme, sohbete ya da günlüğe yazma; .env alanlarını göster, değerleri ben yerel olarak gireyim. Gizli dosyaları Git'e ekleme. Masaüstümde fare, klavye veya ekran kaydı kullanma; görselleri headless üret.
 5. Onaylanan stille, kanal adımı içeren 10 saniyelik 9:16 deneme videosunu rehberdeki kalite kontrollerinden geçirip yerel çıktı olarak sun. Hazır ses yoksa sessiz yazıyla üret; ücretli ses çağrısı veya başka harcama öncesinde kapsamı ve tahmini kullanımı onaylat. Gerçek çıktı oluşmazsa başarı iddia etme; hatayı ve kalan adımı yaz.
@@ -63,7 +67,7 @@ Sonunda kurulanları, atlananları ve deneme videosunun yolunu özetle. Deneme v
 | `yonetim/referanslar.md` | Referans bağlantıları ve sevdiğiniz özellikler. |
 | `yonetim/ROLLER.md` | Metin, üretim, kontrol ve yayın sorumlulukları. |
 
-Kök rehber [KURULUM.md](KURULUM.md); sorular [Türkçe](kurulum/sorular.md) ve [İngilizce](kurulum/questions.md). İş akışı tercihleri yukarıdaki üç yonetim/ belgesinde tutulur; ek JSON düğmeleri değildir. Çalışma kuralları [KURALLAR.md](KURALLAR.md) ve [CLAUDE.md](CLAUDE.md), çıktı denetimi [KALITE-KAPISI.md](KALITE-KAPISI.md) içindedir. Rehberdeki komutlar güncel kaynaktan okunmuştur. İşletim sistemi desteği ve kurulum başarısı gerçek denemeyle ayrıca doğrulanmalıdır.
+Kök rehber [KURULUM.md](KURULUM.md); sorular [Türkçe](kurulum/sorular.md) ve [İngilizce](kurulum/questions.md). İş akışı tercihleri yukarıdaki üç yonetim/ belgesinde tutulur; ek JSON düğmeleri değildir. Çalışma kuralları [KURALLAR.md](KURALLAR.md) ve [CLAUDE.md](CLAUDE.md), çıktı denetimi [KALITE-KAPISI.md](KALITE-KAPISI.md) içindedir. Rehberdeki komutlar güncel kaynaktan okunmuştur. Bildirilen temiz kurulum denemesi, araçları önceden kurulmuş Windows ortamını kapsar; diğer sistemler ve eksik araçların kurulumu henüz sınanmadı.
 
 ## Güvenli çalışma
 

@@ -24,7 +24,7 @@ These are sample defaults, not required dimensions or duration for every later v
 | Promise and source | The title names a concrete topic or event, creates understandable curiosity and makes a promise the opening and body deliver. Claims match the script and cited sources. |
 | Numbers | Every on-screen number has a checked calculation, source or clear example label. |
 | Pacing | For explanatory lessons, use a purposeful visual cue for each sentence. As an editorial default, explain any gap longer than five seconds without a meaningful visual change. This is a style target, not a platform rule. |
-| Main subject | The key subject is clear at phone size in every section. Record the intended scale in the channel's visual identity; apply a numeric target only after defining what it measures. |
+| Main subject | The main subject is clear at phone size in every section. For the explanatory-lesson style, aim for its bounding-box area to occupy at least about 15% of the frame area: (box width × box height) / (frame width × frame height). Record the target in the channel identity and justify exceptions; size alone does not establish readability. |
 | Frames and transitions | Inspect at least every two seconds, plus scene boundaries and brief events. Check overflow, collisions, ghost layers, missing assets and unintended holds. |
 | Audio | Record speech rate, integrated loudness and true peak where applicable. Listen for pronunciation, intelligibility, cuts and effects masking speech. |
 | Cover | The cover and opening frame communicate the topic and remain readable on a phone. |

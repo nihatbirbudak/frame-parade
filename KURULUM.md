@@ -4,6 +4,10 @@ The filename stays KURULUM.md so the README and setup prompt use one guide. This
 
 Goal: configure this copy for its owner, then present a local, silent, 10-second portrait sample using their channel name. YouTube, paid audio, analytics and agent-post are optional. Installation succeeds only when the actual sample has been produced and checked; reading this guide is not a test result.
 
+## Explain every step simply
+
+Assume the user is new to AI and software setup. Explain what the next step achieves in everyday language, ask them to do one thing at a time, and explain technical terms when first used. Do not hand them a long command list. Reuse their answers and authorizations; ask only for missing decisions.
+
 ## 1. Establish the workspace
 
 Use the official repository named in the prompt. If the destination is not empty, stop and agree on a location; do not delete, overwrite or select another repository. If private access is unavailable, report that limitation.
@@ -20,17 +24,27 @@ Run these version checks separately:
     npm --version
     git --version
 
-Node.js must satisfy package.json: version 20 or newer. Record the observed OS, architecture, versions, free disk space and check time in yonetim/ROLLER.md. A read-only cross-platform check is:
+Node.js must satisfy package.json: version 20 or newer; prefer a currently maintained LTS release that meets this requirement. Create yonetim/ROLLER.md if absent, then record the observed OS, architecture, versions, free disk space and check time there. A read-only cross-platform check is:
 
     node -e "const fs=require('node:fs'); const s=fs.statfsSync('.'); console.log(JSON.stringify({platform:process.platform,arch:process.arch,node:process.version,freeBytes:s.bavail*s.bsize}))"
 
-If a check fails, report what is unknown. Do not invent a disk-space requirement, install missing tools silently or claim all operating systems have been tested.
+If a check fails, report what is unknown. For missing tools, identify the operating system first and use the official installation pages below. Explain one step at a time; do not invent commands or silently install software.
+
+| System | Node.js and npm | Git |
+|---|---|---|
+| Windows | [Official download selector](https://nodejs.org/en/download), choose Windows and the correct architecture | [Windows installation](https://git-scm.com/install/windows) |
+| macOS | [Official download selector](https://nodejs.org/en/download), choose macOS and the correct architecture | [macOS installation options](https://git-scm.com/install/mac) |
+| Linux | [Official download selector](https://nodejs.org/en/download), choose the actual distribution-compatible method | [Linux installation options](https://git-scm.com/install/linux), follow the distribution-specific instructions |
+
+After an installation, recheck the actual command versions. Do not confuse this kit's Node.js and Git requirements with the requirements for opening Claude Desktop.
+
+Dependencies and a browser installation can require approximately several hundred MB or more, plus caches and generated media. This is a rough planning allowance, not a measured minimum. Report observed free space; no validated universal disk requirement is available. Longer videos and retained frame files require additional space. A Windows clean-folder trial completed on 20 November 2026 with Node.js, Git and Chrome already installed. Missing-tool installation, macOS and Linux have not been tested by that trial.
 
 Explain that dependency installation downloads packages and may execute installation scripts, including the ffmpeg binary download. Once authorized:
 
     npm install
 
-Stop on failure; do not force-upgrade dependencies or repeatedly reinstall without diagnosing the error.
+Stop on failure; do not force-upgrade dependencies or repeatedly reinstall without diagnosing the error. If npm reports audit warnings, summarize them for review; do not run npm audit fix --force.
 
 ### ffmpeg
 
@@ -40,19 +54,21 @@ The renderer imports ffmpeg-static; it does not need a separate global ffmpeg in
 
 ffmpeg-static does not supply ffprobe. If a later workflow requires ffprobe, check it separately and explain any installation needed. Do not make it a prerequisite for the silent sample.
 
-### Chrome or Chromium
+### Chrome or a compatible browser
 
 puppeteer-core does not install Chrome. ayar.mjs selects the first existing path from:
 
 1. kanal.json → chrome;
 2. CHROME_YOLU from the process environment, including a value loaded from local .env if the variable was not already set;
-3. the following known paths.
+3. known browser installation locations, then an executable search on PATH if none is found.
+
+The current resolver also considers Edge, Brave and Chromium. Chrome was used in the reported Windows trial; detection of another browser is not a successful render test. The categories below summarize the resolver in ayar.mjs.
 
 | System | Paths checked |
 |---|---|
-| Windows | C:\Program Files\Google\Chrome\Application\chrome.exe; C:\Program Files (x86)\Google\Chrome\Application\chrome.exe |
-| macOS | /Applications/Google Chrome.app/Contents/MacOS/Google Chrome |
-| Linux | /usr/bin/google-chrome; /usr/bin/chromium; /usr/bin/chromium-browser |
+| Windows | Program Files / Program Files (x86) Chrome and Edge paths; selected Brave paths; local-user Chrome, Brave and Chromium paths under LOCALAPPDATA; then PATH search. |
+| macOS | Chrome, Chromium, Edge and Brave application bundles under /Applications; then PATH search. |
+| Linux | Known Chrome, Chromium, Edge and Brave executable paths under /usr/bin, plus /snap/bin/chromium; then PATH search. |
 
 Use an actual executable path, not a directory. Check resolution without launching a render:
 
@@ -62,7 +78,7 @@ A resolved file is not proof that Chrome can launch; the sample will test that. 
 
 ## 3. Interview and save preferences
 
-Use [kurulum/questions.md](kurulum/questions.md) for English or [kurulum/sorular.md](kurulum/sorular.md) for Turkish. For other languages, ask equivalent questions in the user's language. Ask one topic at a time and reuse answers already provided. Optional questions can be skipped.
+Use [kurulum/questions.md](kurulum/questions.md) for English or [kurulum/sorular.md](kurulum/sorular.md) for Turkish. For other languages, ask equivalent questions in the user's language. Ask one topic at a time and reuse answers already provided. Optional questions can be skipped. Topics 12–15 are a conditional checklist, not four mandatory follow-up questions: if the user already chose preview before publishing and skipped add-ons, record that, leave the integrations off and perform the remaining local machine checks without repeating the choices.
 
 Preserve the actual JSON schema and value types. Do not create ignored feature switches or use null where the template uses strings, arrays or objects. Keep youtube.cocuklara_ozel at its existing null value until the user makes that choice; uploading requires an explicit true or false.
 
@@ -72,6 +88,25 @@ Preserve the actual JSON schema and value types. Do not create ignored feature s
 | yonetim/VIDEO-KIMLIGI.md | Topic, audience, outcomes, formats, asset locations, approved visual/narration identity and audio choices. Fill the existing document. |
 | yonetim/referanslar.md | Links, user notes, inspected segments, access limits and qualities to adopt or avoid. Create if absent. |
 | yonetim/ROLLER.md | Writing/production/review responsibilities, preview and publication approvals, optional integrations, work limits and observed setup results. Create if absent. |
+
+Other management files have distinct jobs:
+
+- yonetim/isler.md tracks each task, status, next step and owner. Update it within the assigned writing responsibilities.
+- yonetim/karar-gunlugu.md records dated decisions, reasons and decision-makers. Follow its numbering and ownership rules.
+- yonetim/studio-yapilacak.md holds manual YouTube Studio follow-up items created by the upload workflow. During silent setup, leave it without invented publication tasks.
+
+Fill the eight existing VIDEO-KIMLIGI.md sections briefly:
+
+| Section | What to write |
+|---|---|
+| 1. Recurring skeleton | Audience, intended outcome and the repeatable opening–body–ending structure; note the chosen formats. |
+| 2. Visual language | Approved palette, fonts, main-subject scale, motion style and accessible reference traits. |
+| 3. Audio | Silent, own voice or synthetic voice; pronunciation and listening approval; music/effect choices. |
+| 4. Text | Language, explanation level, title/opening approach and source-checking expectations. |
+| 5. Package | Expected video, title, description, cover and subtitles, with output/source locations. |
+| 6. Quality gate | Link KALITE-KAPISI.md and record channel-specific measurable targets and pending inspections. |
+| 7. Free to vary | Elements that may change per video, such as examples, duration or scene composition. |
+| 8. Change log | Date, change and reason; link the corresponding decision instead of silently changing the identity. |
 
 Use these runtime keys, not earlier proposed aliases:
 
@@ -85,7 +120,7 @@ Use these runtime keys, not earlier proposed aliases:
 
 A project's format is in its own proje.json: bicim is dikey or yatay. It is not a channel-level format switch.
 
-Inspect references only where accessible. Present a short style card: audience, narration, palette, typography, motion and things to avoid. Distinguish the user's choices from proposals, then obtain style approval. Separate writing, design/production and review roles; do not start extra paid model sessions merely because roles exist.
+Inspect references only where accessible. If a reference cannot be opened, record its status explicitly as "not inspected" ("incelenmedi" in Turkish). Propose a palette from the user's own description and label it as a proposal; do not describe it as extracted from that reference. Present a short style card: audience, narration, palette, typography, motion and things to avoid. Distinguish the user's choices from proposals, then obtain style approval. Separate writing, design/production and review roles; do not start extra paid model sessions merely because roles exist.
 
 ## 4. Local credentials, only when needed
 

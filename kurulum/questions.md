@@ -150,6 +150,10 @@ Mappings use the actual `kanal.json` schema. Only listed existing keys belong th
 
 **Write / conditions:** Use yonetim/ROLLER.md: manager, writer, production, review and publication owner. Roles do not automatically start separate paid sessions. Without a second model, write and design sequentially.
 
+## Reuse answers for topics 12–15
+
+Treat the following topics as one publishing-and-tools checkpoint; ask only the still-missing decision, one at a time. If the user already said "review before publishing" and "skip add-ons", do not ask 12, 13 and 14 again. Record local preview, leave YouTube connection for later, keep analytics and agent-post off, and reuse any stated usage limits. Machine checks in 15 are still performed locally. Ask about limits only when a concrete unresolved choice affects the next action; do not infer a plan or quota. This does not grant upload or spending approval.
+
 ## G. Publishing and approval
 
 ### 12 — Review method · Required

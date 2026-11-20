@@ -4,7 +4,7 @@ A video studio run by AI agents. Set up with one prompt.
 
 [Türkçe](README.tr.md)
 
-**Status: in preparation.** This document is a draft for the first release. Installation of the distributable kit in a clean folder has not been verified. The features below describe the intended initial scope. The repository is currently private; public release will follow a clean installation test and the project owner’s approval.
+**Status: clean-folder setup verified on Windows, 20 November 2026; macOS and Linux have not been tested.** The trial produced a local silent sample with Node.js, Git and Chrome already installed. Missing-tool installation was not part of that trial.
 
 ## What is it for?
 
@@ -26,7 +26,7 @@ You bring your own scripts, footage and identity. The distributed kit includes n
 | [Claude Code](https://code.claude.com/docs/en/setup) with working access | Guided setup and work inside the project. |
 | Node.js 20+ and npm | Required by package.json; see KURULUM.md for checks. |
 | ffmpeg-static (installed with npm dependencies) | Supplies ffmpeg for rendering. ffprobe is separate and not required for the silent sample. |
-| Google Chrome | Headless animation rendering without desktop control. |
+| Google Chrome or a compatible browser detected by the kit | Headless animation rendering without desktop control; the reported trial used Chrome. |
 | Git | Downloading the repository in the single-prompt workflow. |
 | Internet access and free disk space | Repository/dependency downloads and local output files. The setup check reports requirements. |
 
@@ -36,16 +36,20 @@ Node.js is required for this kit's tools; this does not mean every Claude Code i
 
 ## Set up with one prompt
 
+Paid client work is outside this license; see [LICENSE, section 4](LICENSE).
+
 1. Create an empty project folder and open Claude Code there.
-2. If you have access to the private repository, paste the text below for the installation trial. The public release is not ready yet.
+2. Open the Frame Parade repository linked below and paste the setup text into Claude Code. If the repository is unavailable, stop and check access; do not substitute another download.
 3. Answer one topic at a time. You can skip optional choices and change the proposed style.
 4. Review the 10-second portrait sample featuring your channel name. It will be silent if no audio is ready.
 
 ```text
 Set up Frame Parade from https://github.com/nihatbirbudak/frame-parade in this empty project folder.
 
+Assume I am new to AI. Explain each step simply, ask me to do one thing at a time, and explain technical terms when first used. Paid client work is outside the license; see LICENSE section 4.
+
 1. If the destination is not empty or the repository is inaccessible, stop and explain. Do not delete or overwrite files or choose another repository. If Git is missing, explain how to install it and continue once it is available. Download the repository here, then read KURULUM.md, CLAUDE.md, KURALLAR.md and LICENSE at the repository root. Do not guess around missing instructions or conflicts.
-2. Check the operating system, free disk space and Node.js 20+/npm, Chrome and Git. Follow the guide to install and verify the package-provided ffmpeg; check ffprobe only if a later chosen workflow needs it. Show what is missing and what would be installed. Ask for my approval before installing system software or running package installation scripts. Use existing commands from the guide; do not invent commands.
+2. Check the operating system, free disk space and Node.js 20+/npm, Chrome or a compatible browser, and Git. Follow the guide to install and verify the package-provided ffmpeg; check ffprobe only if a later chosen workflow needs it. Show what is missing and what would be installed. Ask for my approval before installing system software or running package installation scripts. Use existing commands from the guide; do not invent commands.
 3. Follow KURULUM.md and choose kurulum/questions.md for English or kurulum/sorular.md for Turkish; use the user's language, one topic per message. Do not ask again for information I have already provided. I may skip optional choices; state any proposed defaults. Save existing runtime settings in kanal.json; save identity, references and roles in yonetim/VIDEO-KIMLIGI.md, yonetim/referanslar.md and yonetim/ROLLER.md. Follow the actual schema; do not invent JSON fields. Do not modify my source assets.
 4. Review the references I provide where accessible and identify anything you cannot inspect. Present a short style card for my approval. Never request or print keys or tokens in chat or logs. Show the .env fields; I will enter the values locally. Keep secret files out of Git. Do not control my mouse or keyboard or record my desktop; render headlessly.
 5. Use the approved style to produce a local 10-second, 9:16 sample featuring my channel name, and run the guide's quality checks. If no audio is ready, make a silent text sample. Before a paid voice call or other spending, ask me to approve its scope and estimated usage. If no actual output is produced, report the error and remaining step instead of claiming success.
@@ -63,7 +67,7 @@ Finish with what was set up, what was skipped, and the sample video's path. Wait
 | `yonetim/referanslar.md` | Reference links and the qualities you like. |
 | `yonetim/ROLLER.md` | Writing, production, review and publishing responsibilities. |
 
-The root guide is [KURULUM.md](KURULUM.md). Setup questions are [English](kurulum/questions.md) and [Turkish](kurulum/sorular.md). Human workflow preferences live in the three yonetim/ documents above; they are not extra JSON switches. Working rules are in [KURALLAR.md](KURALLAR.md) and [CLAUDE.md](CLAUDE.md), with output checks in [KALITE-KAPISI.md](KALITE-KAPISI.md). The guide documents commands read from the current source. Operating-system support and installation success still require real trial results.
+The root guide is [KURULUM.md](KURULUM.md). Setup questions are [English](kurulum/questions.md) and [Turkish](kurulum/sorular.md). Human workflow preferences live in the three yonetim/ documents above; they are not extra JSON switches. Working rules are in [KURALLAR.md](KURALLAR.md) and [CLAUDE.md](CLAUDE.md), with output checks in [KALITE-KAPISI.md](KALITE-KAPISI.md). The guide documents commands read from the current source. The reported clean-folder trial covers Windows with prerequisites present; other systems and missing-tool installation remain untested.
 
 ## Safe working rules
 
