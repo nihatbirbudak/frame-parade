@@ -5,7 +5,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { ROOT, tts, sesAyari, abonelik, SES_KIMLIGI, MODEL } from './eleven.mjs';
-import { proje } from '../ayar.mjs';
+import { proje, heceSay } from '../ayar.mjs';
 
 const DERS = process.argv[2] || 'ornek';
 const DIR = path.join(proje(DERS), 'destek', 'ses');
@@ -17,7 +17,7 @@ const HIZ = process.argv.includes('--hiz') ? Number(process.argv[process.argv.in
 const SEEDLER = HIZ ? [11, 23] : [11, 23, 37];
 const EK = HIZ ? `-h${Math.round(HIZ * 100)}` : '';
 // syllable count = number of vowels; the vowel set is Turkish-specific (includes ı, ö, ü and circumflexed vowels)
-const hece = (s) => (s.toLocaleLowerCase('tr').match(/[aeıioöuüâîû]/g) || []).length;
+const hece = (s) => heceSay(s);   // syllables by kanal.dil (ayar.mjs)
 
 const ayar = { ...(await sesAyari(SES_KIMLIGI)), ...(HIZ ? { speed: HIZ } : {}) };
 const a0 = await abonelik(); console.log(`account remaining: ${a0.kalan}`);

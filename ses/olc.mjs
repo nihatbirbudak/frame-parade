@@ -6,12 +6,12 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { ROOT } from './eleven.mjs';
-import { GECICI, proje } from '../ayar.mjs';
+import { GECICI, proje, heceSay } from '../ayar.mjs';
 
 import ffmpegYolu from 'ffmpeg-static';
 export const FF = ffmpegYolu;
 // vowel count; the vowel set is Turkish-specific (ı, ö, ü, circumflexed vowels)
-const unlu = (s) => (s.toLocaleLowerCase('tr').match(/[aeıioöuüâîû]/g) || []).length;
+const unlu = (s) => heceSay(s);   // syllables by kanal.dil (ayar.mjs)
 const ff = (args) => spawnSync(FF, ['-hide_banner', ...args], { encoding: 'utf8' }).stderr || '';
 const f2 = (x, n = 2) => (x == null || Number.isNaN(x) ? null : +x.toFixed(n));
 

@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { ROOT } from './eleven.mjs';
-import { GECICI, proje } from '../ayar.mjs';
+import { GECICI, proje, heceSay, tikBul } from '../ayar.mjs';
 
 const [DERS = 'ornek', SURUM = 'A', ALIM = 'A-11'] = process.argv.slice(2);
 import ffmpegYolu from 'ffmpeg-static';
@@ -27,13 +27,14 @@ const m1 = olc(cikti);
 const tas = (t) => +(((t < kes ? t : t + DURAK)) / TEMPO).toFixed(3);
 const kel = kelimeler.map((w) => ({ w: w.w, t0: tas(w.t0), t1: tas(w.t1) }));
 // bul() matches Turkish spoken words (the narration is Turkish), hence the Turkish locale and the Turkish prefixes below
-const bul = (on) => kel.find((w) => w.w.toLocaleLowerCase('tr').startsWith(on));
-const tiklar = [['abone', +(bul('abone').t0 + 0.03).toFixed(3)], ['begen', +(bul('beğen').t0 + 0.03).toFixed(3)]];
+// clicks lock to words from kanal.json › ses.tik_kelimeleri (or the language default, ayar.mjs); buttons whose word is missing are not clicked
+const tiklar = ['abone', 'begen', 'zil'].map((tur) => [tur, tikBul(kel, tur)]).filter(([, w]) => w).map(([tur, w]) => [tur, +(w.t0 + 0.03).toFixed(3)]).sort((x, y) => x[1] - y[1]);
+if (!tiklar.length) console.log('note: no click word found in the sentence; set kanal.json › ses.tik_kelimeleri');
 const sure = kel[kel.length - 1].t1;
 // click: a short 1.8 kHz sine + a very short noise burst, ~60 ms; peak −20 dBFS
 const TIK = path.join(DIR, 'tik.wav');
 if (!fs.existsSync(TIK)) ff(['-f', 'lavfi', '-i', "aevalsrc='0.55*sin(2*PI*1800*t)*exp(-t*90)+0.25*(random(0)*2-1)*exp(-t*260)|0.55*sin(2*PI*1800*t)*exp(-t*90)+0.25*(random(1)*2-1)*exp(-t*260)':s=48000:d=0.06", '-af', 'volume=-14dB', '-c:a', 'pcm_s16le', TIK]);
 const kayit = { surum: SURUM, alim: ALIM, metin: kelimeler.map((w) => w.w).join(' '), durak_sn: DURAK, tempo: TEMPO, kazanc_db: +kazanc.toFixed(2), lufs: m1.I, tepe: m1.TP,
-  sure, hece_sn: +((kelimeler.map((w) => w.w).join(' ').toLocaleLowerCase('tr').match(/[aeıioöuüâîû]/g) || []).length / (sure - kel[0].t0)).toFixed(2), kelimeler: kel, tiklar };
+  sure, hece_sn: +(heceSay(kelimeler.map((w) => w.w).join(' ')) / (sure - kel[0].t0)).toFixed(2), kelimeler: kel, tiklar };
 fs.writeFileSync(path.join(DIR, `destek-${SURUM}.json`), JSON.stringify(kayit, null, 1));
 console.log(`${SURUM} (${ALIM}): ${sure.toFixed(2)} s, ${kayit.hece_sn} syllables/s, ${m1.I} LUFS, peak ${m1.TP}; clicks ${JSON.stringify(tiklar)}`);

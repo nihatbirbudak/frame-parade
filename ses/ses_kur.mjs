@@ -7,7 +7,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { ROOT } from './eleven.mjs';
-import { GECICI, proje } from '../ayar.mjs';
+import { GECICI, proje, heceSay } from '../ayar.mjs';
 import { FF, sessizlik } from './olc.mjs';
 
 const [DERS, AD, liste] = process.argv.slice(2);
@@ -18,7 +18,7 @@ const metin = JSON.parse(fs.readFileSync(path.join(DIR, 'metin.json'), 'utf8'));
 const HEDEF = 5.2, SR = 48000;
 const BAS = 0.5, KANCA_SONRA = 1.0, KART = 2.2, SON = Number(process.env.SON_SN || 2.0);   // full lesson: SON_SN=20 (end screen)
 // vowel count; the vowel set is Turkish-specific (ı, ö, ü, circumflexed vowels)
-const unlu = (s) => (s.toLocaleLowerCase('tr').match(/[aeıioöuüâîû]/g) || []).length;
+const unlu = (s) => heceSay(s);   // syllables by kanal.dil (ayar.mjs)
 const run = (args) => { const r = spawnSync(FF, ['-y', '-hide_banner', '-loglevel', 'error', ...args], { encoding: 'utf8' }); if (r.status) throw new Error(r.stderr); return r; };
 
 const ids = liste.split(',');

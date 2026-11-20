@@ -1,5 +1,5 @@
 {
- "_aciklama": "Single settings file of the kit. Filled in during setup; code constants are read from here. Secrets (keys, tokens) never go here; they go in .env. ekran_metinleri: overrides for on-screen text (keys: chapter, closing, episode, like, subscribe, subscribed, full_video, hello, first_video_ready, setup_test, first_chapter, chain); empty means built-in text for dil (en, tr).",
+ "_aciklama": "Single settings file of the kit. Filled in during setup; code constants are read from here. Secrets (keys, tokens) never go here; they go in .env. ekran_metinleri: overrides for on-screen text (keys: chapter, closing, episode, like, subscribe, subscribed, full_video, hello, first_video_ready, setup_test, first_chapter, chain); empty means built-in text for dil (en, tr). ses.tik_kelimeleri: word prefixes that button clicks lock to, e.g. {\"abone\": [\"subscrib\"], \"begen\": [\"like\"], \"zil\": [\"bell\"]}; empty means the default for dil.",
  "ad": "Channel Name",
  "seri": "Series Name",
  "dil": "en",
@@ -23,7 +23,8 @@
   "kimlik": "",
   "model": "eleven_v4_turbo",
   "hece_sn": 5.2,
-  "lufs": -14
+  "lufs": -14,
+  "tik_kelimeleri": {}
  },
  "youtube": {
   "kanal_kimligi": "",

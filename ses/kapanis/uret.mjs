@@ -8,6 +8,7 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { tts, sesAyari, abonelik, SES_KIMLIGI, MODEL } from '../eleven.mjs';
+import { heceSay, tikBul } from '../../ayar.mjs';
 const DIR = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(DIR, '..', '..');
 import ffmpegYolu from 'ffmpeg-static';
@@ -25,7 +26,7 @@ if (!fs.existsSync(MP3)) {
 } else console.log('abone.mp3 exists, not generated');
 const H = JSON.parse(fs.readFileSync(HAMK, 'utf8'));
 if (H.metin !== METIN) throw new Error('the saved audio was generated with a different text; remove the files by hand for a new text');
-const K = H.kelimeler, /* Turkish vowel set */ unlu = (s) => (s.toLocaleLowerCase('tr').match(/[aeıioöuüâîû]/g) || []).length;
+const K = H.kelimeler, unlu = (s) => heceSay(s);   // syllables by kanal.dil (ayar.mjs)
 const span = K[K.length - 1].t1 - K[0].t0, hs = unlu(METIN) / span;
 const tempo = +Math.min(1.08, Math.max(0.92, 5.2 / hs)).toFixed(4);
 const a = Math.max(0, K[0].t0 - 0.05), b = K[K.length - 1].t1 + 0.25;
@@ -35,5 +36,8 @@ let kaz = -14 - olc(ham).I;
 ff(['-i', ham, '-af', `volume=${kaz.toFixed(2)}dB,alimiter=limit=0.8:attack=1:release=60:level=0`, '-c:a', 'pcm_s16le', wav]); fs.unlinkSync(ham);
 const L = olc(wav);
 const kelimeler = K.map((w) => ({ w: w.w, t0: +((w.t0 - a) / tempo).toFixed(3), t1: +((w.t1 - a) / tempo).toFixed(3) }));
-fs.writeFileSync(path.join(DIR, 'abone.kelimeler.json'), JSON.stringify({ metin: METIN, tempo, hece_sn_ham: +hs.toFixed(2), hece_sn: +(hs * tempo).toFixed(2), sure_sn: +((b - a) / tempo).toFixed(3), lufs: L.I, tepe_dbtp: L.TP, kelimeler }, null, 1));
+// click time for the SUBSCRIBE button: the first word matching kanal.json › ses.tik_kelimeleri.abone (or the language default)
+const tikK = tikBul(kelimeler, 'abone');
+if (!tikK) console.log('note: no subscribe click word found in the sentence; set kanal.json › ses.tik_kelimeleri.abone');
+fs.writeFileSync(path.join(DIR, 'abone.kelimeler.json'), JSON.stringify({ metin: METIN, tempo, hece_sn_ham: +hs.toFixed(2), hece_sn: +(hs * tempo).toFixed(2), sure_sn: +((b - a) / tempo).toFixed(3), lufs: L.I, tepe_dbtp: L.TP, abone_tik: tikK ? +(tikK.t0 + 0.03).toFixed(3) : null, kelimeler }, null, 1));
 console.log(`abone.wav: ${((b - a) / tempo).toFixed(2)} s · syllables/s ${hs.toFixed(2)} → ${(hs * tempo).toFixed(2)} · ${L.I} LUFS · peak ${L.TP} dBTP`);

@@ -27,3 +27,29 @@ export function chromeYolu() {
   if (!y) throw new Error('Chrome not found: put its path in the chrome field of kanal.json or in the CHROME_YOLU environment variable');
   return y;
 }
+
+// Syllable count for the speech-tempo measure (syllables per second), by kanal.dil.
+//   tr: one syllable per vowel (Turkish spelling is phonetic).
+//   en (and any other language): a simple English estimate: vowel groups (a e i o u y) per word, a silent final "e" is
+//   dropped (but "-le" after a consonant counts, as in "table"), at least one per word. Rough, but stable for tempo control.
+export function heceSay(metin, dil = KANAL.dil || 'en') {
+  if (dil === 'tr') return (metin.toLocaleLowerCase('tr').match(/[aeıioöuüâîû]/g) || []).length;
+  return (metin.toLowerCase().match(/[a-z']+/g) || []).reduce((n, kelime) => {
+    const w = kelime.replace(/'/g, ''); let g = (w.match(/[aeiouy]+/g) || []).length;
+    if (g > 1 && /[^aeiouy]e$/.test(w) && !/[^aeiouy]le$/.test(w)) g--;
+    return n + Math.max(1, g);
+  }, 0);
+}
+
+// Click words: which spoken word each on-screen button click is locked to (support card, subscribe closing).
+// Default by kanal.dil; kanal.json › ses.tik_kelimeleri overrides per button, e.g. { "abone": ["subscribe", "abone"], "begen": ["like"] }.
+// Each entry is a word prefix; the first spoken word starting with any prefix gets the click.
+const TIK = {
+  en: { abone: ['subscrib'], begen: ['like', 'liking'], zil: ['bell', 'notification'] },
+  tr: { abone: ['abone'], begen: ['beğen'], zil: ['zil', 'bildirim'] },
+};
+export const tikKelimeleri = (dil = KANAL.dil || 'en') => ({ ...(TIK[dil] || TIK.en), ...(KANAL.ses?.tik_kelimeleri || {}) });
+export function tikBul(kelimeler, tur, dil = KANAL.dil || 'en') {
+  const onekler = (tikKelimeleri(dil)[tur] || []).map((o) => o.toLocaleLowerCase(dil));
+  return kelimeler.find((w) => { const k = w.w.toLocaleLowerCase(dil).replace(/^[^\p{L}]+/u, ''); return onekler.some((o) => k.startsWith(o)); });
+}
