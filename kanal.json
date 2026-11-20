@@ -1,0 +1,50 @@
+{
+ "_aciklama": "Kitin tek ayar dosyası. Kurulumda doldurulur; kod sabitleri buradan okunur. Gizli bilgi (anahtar, jeton) buraya YAZILMAZ, .env dosyasına yazılır.",
+ "ad": "Kanal Adı",
+ "seri": "Seri Adı",
+ "dil": "tr",
+ "renkler": {
+  "zemin": "#111214",
+  "yuzey": "#1A1C20",
+  "cizgi": "#2C2F36",
+  "ik": "#9A9EA6",
+  "metin": "#EEEEEE",
+  "vu": "#4C9AFF",
+  "abone_dugmesi": "#FF0033"
+ },
+ "yazitipleri": {
+  "baslik": "Inter Variable",
+  "sayi": "JetBrains Mono Variable"
+ },
+ "logo": "",
+ "metinler": {
+  "ders": "Ders",
+  "bolum": "BÖLÜM",
+  "kapanis": "KAPANIŞ",
+  "sonraki": "Sonraki",
+  "abone_ol": "ABONE OL",
+  "abone_olundu": "ABONE OLUNDU",
+  "begen": "BEĞEN"
+ },
+ "ses": {
+  "saglayici": "elevenlabs",
+  "kimlik": "",
+  "model": "eleven_v4_turbo",
+  "hece_sn": 5.2,
+  "lufs": -14
+ },
+ "youtube": {
+  "oynatma_listesi": "",
+  "kategori": "27",
+  "etiketler": [],
+  "yayin_saatleri": ["19:00"],
+  "utc_farki": "+03:00",
+  "yapay_zeka_beyani": false,
+  "aciklama_zorunlu": []
+ },
+ "klasorler": {
+  "projeler": "projeler",
+  "gecici": ""
+ },
+ "chrome": ""
+}

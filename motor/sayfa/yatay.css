@@ -1,0 +1,23 @@
+/* Yatay (16:9, 1920×1080) sahne. Belirteçler kimlik.css + kanal.json. */
+html, body { width: 1920px; height: 1080px; overflow: hidden; }
+#sahne { position: absolute; inset: 0; width: 1920px; height: 1080px; background: var(--zemin); overflow: hidden; }
+.k { position: absolute; left: 0; top: 0; }                  /* katman: tam sahne */
+.kat { position: absolute; inset: 0; }
+.y { position: absolute; white-space: nowrap; line-height: 1; color: var(--metin); font-family: var(--baslik); }
+.y.sayi { font-family: var(--sayi); font-variant-numeric: tabular-nums; font-weight: 500; }
+.y.ik { color: var(--ikincil); }
+.y.vu { color: var(--vurgu); }
+.y.kunye { font-family: var(--sayi); font-weight: 600; letter-spacing: 0.08em; font-size: 22px; color: var(--ikincil); }
+.kutu { position: absolute; border: 3px solid var(--ikincil); border-radius: 6px; background: var(--yuzey); }
+.kutu.bos { background: transparent; }
+.kutu .et { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); text-align: center; font-weight: 700; color: var(--metin); white-space: nowrap; line-height: 1.1; }
+.cip { position: absolute; padding: 14px 24px; border: 3px solid var(--ikincil); border-radius: 6px; background: var(--yuzey);
+  font-weight: 700; font-size: 40px; line-height: 1; white-space: nowrap; color: var(--metin); }
+svg.k { overflow: visible; }
+svg .c { fill: none; stroke: var(--ikincil); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+svg .c.v { stroke: var(--vurgu); stroke-width: 5; }
+svg .c.m { stroke: var(--metin); }
+svg .c.ince { stroke: var(--cizgi); stroke-width: 1.5; }
+svg .olcu { stroke: var(--ikincil); stroke-width: 1.5; fill: none; }
+svg text { font-family: var(--sayi); fill: var(--ikincil); }
+#kunye { position: absolute; left: 96px; top: 52px; }
