@@ -54,8 +54,9 @@ export function destekKarti(par, { ders, seri = KANAL.seri } = {}) {
   const bgEt = etiket(bg, M('like'), { boy: 38, sol: 122 });
   const art1 = B.yazi(k, '+1', { x: X0 + 70, y: Y - 6, boy: 40, sayi: true, renk: 'vu', hiza: 'orta', dikey: 'alt' });
   const AX = X0 + 320, ab = dugme(k, { x: AX, y: Y, w: 460, h: H, bg: KIRMIZI });
-  const abEt = etiket(ab, M('subscribe'), { boy: 42, ag: 800, orta: true });
-  const abOk = etiket(ab, M('subscribed'), { boy: 38, ag: 700, renk: R.metin, orta: true }); gsap.set(abOk, { autoAlpha: 0 });
+  // text on the red / dark grey button is always white (readable in light and dark themes)
+  const abEt = etiket(ab, M('subscribe'), { boy: 42, ag: 800, renk: '#FFFFFF', orta: true });
+  const abOk = etiket(ab, M('subscribed'), { boy: 38, ag: 700, renk: '#FFFFFF', orta: true }); gsap.set(abOk, { autoAlpha: 0 });
   const ZX = AX + 516, zl = dugme(k, { x: ZX, y: Y, w: H, h: H, bg: R.yuzey, cer: R.cizgi });
   const zs = simge(zl, [ZIL.govde, ZIL.dil], { x: 24, y: 22, boy: 64 });
   // bell vibration lines (page coordinates)

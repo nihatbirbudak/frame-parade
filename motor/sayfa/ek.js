@@ -98,12 +98,13 @@ export function dersKartiGoster(tl, d, t0) {
 
 // ---- standard subscribe closing: a vertical SUBSCRIBE button + a cursor click (the vertical version of the destek.js button) ----
 // The click is locked to the word "abone" (Turkish for "subscribe") in the closing sentence; on the audio side the approved click effect is placed at the same moment (kapanis_ekle.mjs).
+// button text is always white: it sits on the red (or, once subscribed, dark grey) button in light and dark themes
 const KIRMIZI = KANAL.renkler?.abone_dugmesi || '#FF0033', GRI = '#2E3138', IMLEC = 'M0,0 L0,36 L9,27.5 L15.5,42 L22,39 L15.6,25 L27,25 Z';
 export function aboneDugmesi(par, { x = 495, y = 1300, w = 420, h = 104 } = {}) {
   const d = document.createElement('div');
   Object.assign(d.style, { position: 'absolute', left: x - w / 2 + 'px', top: y - h / 2 + 'px', width: w + 'px', height: h + 'px', borderRadius: h / 2 + 'px', background: KIRMIZI });
   par.appendChild(d); gsap.set(d, { autoAlpha: 0 });
-  const et = (txt, boy, ag) => { const e = document.createElement('div'); e.textContent = txt; Object.assign(e.style, { position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', whiteSpace: 'nowrap', lineHeight: 1, fontFamily: 'var(--baslik)', fontSize: boy + 'px', fontWeight: ag, color: R.metin }); d.appendChild(e); return e; };
+  const et = (txt, boy, ag) => { const e = document.createElement('div'); e.textContent = txt; Object.assign(e.style, { position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', whiteSpace: 'nowrap', lineHeight: 1, fontFamily: 'var(--baslik)', fontSize: boy + 'px', fontWeight: ag, color: '#FFFFFF' }); d.appendChild(e); return e; };
   const ol = et(M('subscribe'), 40, 800), oldu = et(M('subscribed'), 34, 700); gsap.set(oldu, { autoAlpha: 0 });
   const NS = 'http://www.w3.org/2000/svg';
   const im = document.createElementNS(NS, 'svg'); im.setAttribute('width', 44); im.setAttribute('height', 66); im.setAttribute('viewBox', '-2 -2 31 46');
