@@ -24,6 +24,12 @@ export function sunucu() {
   return new Promise((resolve) => {
     const srv = http.createServer((req, res) => {
       const url = decodeURIComponent(req.url.split('?')[0]);
+      // /__dosyalar?proje=<name>: which project files exist (top level and cikti/), so the page fetches only those (no 404s)
+      if (url === '/__dosyalar') {
+        const ad = new URLSearchParams(req.url.split('?')[1] || '').get('proje') || '', kok = path.join(PROJELER, ad);
+        const liste = kok.startsWith(PROJELER) && fs.existsSync(kok) ? [...fs.readdirSync(kok), ...(fs.existsSync(path.join(kok, 'cikti')) ? fs.readdirSync(path.join(kok, 'cikti')).map((f) => 'cikti/' + f) : [])] : [];
+        res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }); res.end(JSON.stringify(liste)); return;
+      }
       const file = path.join(ROOT, url === '/' ? 'motor/sayfa/sahne.html' : url);
       if (!file.startsWith(ROOT) || /(^|[\\/])(\.env|client_secret|token)/i.test(file) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) { res.writeHead(404); res.end('not found'); return; }
       res.writeHead(200, { 'Content-Type': MIME[path.extname(file).toLowerCase()] || 'application/octet-stream', 'Cache-Control': 'no-store' });

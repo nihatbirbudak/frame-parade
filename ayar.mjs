@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { spawnSync } from 'node:child_process';
 
 export const KOK = path.dirname(fileURLToPath(import.meta.url));
 // Minimal .env loader (no dependency): KEY=value lines, # comments, optional quotes. Existing environment variables win.
@@ -18,13 +19,31 @@ export const PROJELER = path.resolve(KOK, KANAL.klasorler?.projeler || 'projeler
 export const GECICI = KANAL.klasorler?.gecici ? path.resolve(KOK, KANAL.klasorler.gecici) : path.join(os.tmpdir(), 'video-kiti');
 export const proje = (ad) => path.join(PROJELER, ad);
 
-// Chrome / Chromium: kanal.json › chrome, else the CHROME_YOLU environment variable, else well-known locations per operating system
+// Chromium-based browser for headless rendering. Order: kanal.json › chrome, the CHROME_YOLU environment variable (.env),
+// then well-known install locations: Chrome (system and per-user), Edge, Brave, Chromium on Windows / macOS / Linux,
+// and finally the PATH (`which` on macOS/Linux, `where` on Windows).
 export function chromeYolu() {
+  const L = process.env.LOCALAPPDATA, PF = process.env.ProgramFiles || 'C:\\Program Files', PF86 = process.env['ProgramFiles(x86)'] || 'C:\\Program Files (x86)';
   const adaylar = [KANAL.chrome, process.env.CHROME_YOLU,
-    'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe', 'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
-    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/usr/bin/google-chrome', '/usr/bin/chromium', '/usr/bin/chromium-browser'].filter(Boolean);
-  const y = adaylar.find((a) => fs.existsSync(a));
-  if (!y) throw new Error('Chrome not found: put its path in the chrome field of kanal.json or in the CHROME_YOLU environment variable');
+    // Windows
+    path.join(PF, 'Google\\Chrome\\Application\\chrome.exe'), path.join(PF86, 'Google\\Chrome\\Application\\chrome.exe'),
+    L && path.join(L, 'Google\\Chrome\\Application\\chrome.exe'),
+    path.join(PF86, 'Microsoft\\Edge\\Application\\msedge.exe'), path.join(PF, 'Microsoft\\Edge\\Application\\msedge.exe'),
+    path.join(PF, 'BraveSoftware\\Brave-Browser\\Application\\brave.exe'), L && path.join(L, 'BraveSoftware\\Brave-Browser\\Application\\brave.exe'),
+    L && path.join(L, 'Chromium\\Application\\chrome.exe'),
+    // macOS
+    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/Applications/Chromium.app/Contents/MacOS/Chromium',
+    '/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge', '/Applications/Brave Browser.app/Contents/MacOS/Brave Browser',
+    // Linux
+    '/usr/bin/google-chrome', '/usr/bin/google-chrome-stable', '/usr/bin/chromium', '/usr/bin/chromium-browser', '/snap/bin/chromium',
+    '/usr/bin/microsoft-edge', '/usr/bin/brave-browser'].filter(Boolean);
+  let y = adaylar.find((a) => fs.existsSync(a));
+  if (!y) {
+    const ara = process.platform === 'win32' ? ['where', ['chrome', 'msedge', 'brave']] : ['which', ['google-chrome', 'google-chrome-stable', 'chromium', 'chromium-browser', 'microsoft-edge', 'brave-browser']];
+    for (const ad of ara[1]) { const r = spawnSync(ara[0], [ad], { encoding: 'utf8' }); const s = (r.stdout || '').split(/\r?\n/)[0].trim(); if (r.status === 0 && s && fs.existsSync(s)) { y = s; break; } }
+  }
+  if (!y) throw new Error('No Chrome, Edge, Brave or Chromium found. Install one, or set its full path in kanal.json › "chrome" '
+    + '(e.g. "C:\\\\Program Files\\\\Google\\\\Chrome\\\\Application\\\\chrome.exe" or "/usr/bin/chromium") or in the CHROME_YOLU variable in .env.');
   return y;
 }
 

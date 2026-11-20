@@ -11,7 +11,9 @@ const PROJE = q.get('proje'), PARCA = q.get('parca') || 'tam';
 window.VIDEO = { hazir: false, hata: null, fps: 30 };
 const norm = (s) => s.toLocaleLowerCase(KANAL.dil || 'tr').replace(/[^\p{L}\p{N}]/gu, '');
 const KOKP = `/${KANAL.klasorler?.projeler || 'projeler'}/${PROJE}`;
-const json = async (yollar, varsayilan) => { for (const y of yollar) { const r = await fetch(y); if (r.ok) return r.json(); } if (varsayilan !== undefined) return varsayilan; throw new Error(`file missing: ${yollar.join(' | ')}`); };
+// only files that exist are fetched (the engine's server lists them), so a project without optional files causes no 404s
+const VAR = new Set(await fetch(`/__dosyalar?proje=${encodeURIComponent(PROJE)}`).then((r) => (r.ok ? r.json() : [])).catch(() => []));
+const json = async (yollar, varsayilan) => { for (const y of yollar) { if (!VAR.has(y.slice(KOKP.length + 1))) continue; const r = await fetch(y); if (r.ok) return r.json(); } if (varsayilan !== undefined) return varsayilan; throw new Error(`file missing: ${yollar.join(' | ')}`); };
 
 try {
   const PJ = await json([`${KOKP}/proje.json`], { bicim: 'yatay' });

@@ -6,6 +6,7 @@ for (const [ad, deger] of Object.entries({ zemin: k.zemin, yuzey: k.yuzey, cizgi
 if (y.baslik) kok.setProperty('--baslik', `'${y.baslik}', system-ui, sans-serif`);
 if (y.sayi) kok.setProperty('--sayi', `'${y.sayi}', ui-monospace, monospace`);
 export const DIL = KANAL.dil || 'en';
+document.documentElement.lang = DIL;
 
 // On-screen text. Order: kanal.json › ekran_metinleri[key] → built-in text for kanal.dil → English.
 const SOZLUK = {
