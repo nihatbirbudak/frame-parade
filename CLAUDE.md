@@ -11,7 +11,7 @@ This repository is a configurable video-production kit. Its owner supplies the c
 
 ## Roles and production
 
-Record who writes, produces, reviews and approves in yonetim/ROLLER.md. Follow the owner's assignments. One model may perform distinct roles sequentially; extra roles do not automatically require more sessions or services.
+Record who writes, produces, reviews and approves in yonetim/ROLLER.md. Follow the owner's assignments. By default, the same model writes and produces sequentially, with the owner reviewing the result. Add a second model only when the owner chooses it; agent-post is optional. Extra roles do not automatically require more sessions or services.
 
 For each video:
 

@@ -138,9 +138,9 @@ Mappings use the actual `kanal.json` schema. Only listed existing keys belong th
 
 ## F. Writing
 
-### 11 — Who writes · Required choice
+### 11 — Who writes · Default: this model
 
-**Question:** Will you write scripts, should this model write them, or would you like a second model such as Codex?
+**Question:** Shall I prepare the scripts and then the visuals, with you reviewing the result? You can choose to write yourself or add a second model later.
 
 **Why:** This assigns writing, design and review.
 
@@ -148,7 +148,7 @@ Mappings use the actual `kanal.json` schema. Only listed existing keys belong th
 
 **Existing JSON keys:** None; use management documents.
 
-**Write / conditions:** Use yonetim/ROLLER.md: manager, writer, production, review and publication owner. Roles do not automatically start separate paid sessions. Without a second model, write and design sequentially.
+**Write / conditions:** Use yonetim/ROLLER.md: manager, writer, production, review and publication owner. Default to the same model for writing and production; perform these roles sequentially and keep owner review explicit. Reuse an existing choice without asking again. Add a second model such as Codex only when the user chooses it. Agent-post is optional and does not become a setup prerequisite. Do not automatically start extra paid sessions.
 
 ## Reuse answers for topics 12–15
 

@@ -120,7 +120,7 @@ Use these runtime keys, not earlier proposed aliases:
 
 A project's format is in its own proje.json: bicim is dikey or yatay. It is not a channel-level format switch.
 
-Inspect references only where accessible. If a reference cannot be opened, record its status explicitly as "not inspected" ("incelenmedi" in Turkish). Propose a palette from the user's own description and label it as a proposal; do not describe it as extracted from that reference. Present a short style card: audience, narration, palette, typography, motion and things to avoid. Distinguish the user's choices from proposals, then obtain style approval. Separate writing, design/production and review roles; do not start extra paid model sessions merely because roles exist.
+Inspect references only where accessible. If a reference cannot be opened, record its status explicitly as "not inspected" ("incelenmedi" in Turkish). Propose a palette from the user's own description and label it as a proposal; do not describe it as extracted from that reference. Present a short style card: audience, narration, palette, typography, motion and things to avoid. Distinguish the user's choices from proposals, then obtain style approval. Keep writing, design/production and review responsibilities clear. By default, the same model writes the script and then produces the visuals; the owner reviews the result. A second model and agent-post are optional later choices, never prerequisites for this setup. Do not start extra paid sessions merely because roles exist.
 
 ## 4. Local credentials, only when needed
 
@@ -220,7 +220,7 @@ For daily collection, first agree on time, timezone, executable, working directo
 
 ### Agent-post
 
-This is a separate, optional integration. Follow its installed documentation; the kit does not supply a universal installer. Use a unique identity per task, read only that task's inbox, preserve existing identity bindings and reuse one healthy local watcher. Empty inbox checks must not invoke a model. Do not create a second watcher or periodic model polling.
+This is a separate, optional integration for users who choose collaboration between models. The single-model workflow needs no agent-post. Follow the current [agent-post repository instructions](https://github.com/nihatbirbudak/agent-post) for the public package, or the installed documentation for an existing local setup; do not mix their commands or identity settings. The kit does not supply a universal installer. Use a unique identity per task, read only that task's inbox, preserve existing identity bindings and reuse one healthy local watcher. Empty inbox checks must not invoke a model. Do not create a second watcher or periodic model polling.
 
 ## 7. Finish and record the result
 

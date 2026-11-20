@@ -8,6 +8,8 @@ Yapay zekâ ajanlarıyla çalışan video stüdyosu. Tek prompt ile kurulum.
 
 ## Ne işe yarar?
 
+Varsayılan olarak aynı model metinleri ve görselleri hazırlar; sonucu siz incelersiniz. İkinci model isteğe bağlıdır.
+
 Kanalınıza ait metinleri, görüntüleri, sesleri ve üretim kararlarını aynı proje içinde düzenlemenizi amaçlar. Claude Code size kanalınızı ve çalışma biçiminizi sorar; cevaplardan video kimliği ile görev dağılımını oluşturur. Sonra kanal adınızla kısa bir deneme videosu hazırlar.
 
 Başlangıç kapsamı:
@@ -50,7 +52,7 @@ Yapay zekâya yeni başlayan biri olduğumu varsay. Her adımı sade dille açı
 
 1. Hedef boş değilse veya depoya erişilemiyorsa dur ve durumu açıkla. Dosya silme, üzerine yazma veya başka depo seçme. Git yoksa kurulum yolunu göster; kurulduktan sonra devam et. Depoyu bu klasöre indir; önce depo kökündeki KURULUM.md, CLAUDE.md, KURALLAR.md ve LICENSE dosyalarını oku. Eksik rehber veya çelişki varsa varsayarak ilerleme.
 2. İşletim sistemi, boş disk, Node.js 20+/npm, Chrome veya uyumlu bir tarayıcı ve Git gereksinimlerini denetle. Paketle gelen ffmpeg kurulumunu ve kontrolünü rehbere göre yap; ffprobe yalnız seçilen sonraki bir iş akışı gerektirirse denetlenir. Eksikleri ve yapılacak kurulumu göster; sistem yazılımı kurmadan veya paket kurulum betiklerini çalıştırmadan önce onayımı al. Yalnız rehberdeki mevcut komutları kullan; komut uydurma.
-3. KURULUM.md akışında Türkçe için kurulum/sorular.md, İngilizce için kurulum/questions.md kullan; kullanıcının dilinde, bir mesajda tek konu sor. Daha önce verdiğim cevabı yeniden isteme. İsteğe bağlıları atlayabilirim; eksik tercihler için önerini açıkça belirt. Mevcut çalışma ayarlarını kanal.json içine; kimlik, referans ve rolleri yonetim/VIDEO-KIMLIGI.md, yonetim/referanslar.md ve yonetim/ROLLER.md içine kaydet. Gerçek şemaya uy; JSON alanı uydurma. Kaynak dosyalarımı değiştirme.
+3. KURULUM.md akışında Türkçe için kurulum/sorular.md, İngilizce için kurulum/questions.md kullan; kullanıcının dilinde, bir mesajda tek konu sor. Daha önce verdiğim cevabı yeniden isteme. İsteğe bağlıları atlayabilirim; eksik tercihler için önerini açıkça belirt. Varsayılan olarak metin ve üretimi aynı model üstlensin, ben inceleyeyim; ikinci model ve ajan postası daha sonra seçebileceğim eklerdir. Mevcut çalışma ayarlarını kanal.json içine; kimlik, referans ve rolleri yonetim/VIDEO-KIMLIGI.md, yonetim/referanslar.md ve yonetim/ROLLER.md içine kaydet. Gerçek şemaya uy; JSON alanı uydurma. Kaynak dosyalarımı değiştirme.
 4. Verdiğim referansları erişebildiğin ölçüde incele; erişemediğini belirt. Kısa bir stil kartı sun ve onayımı al. Anahtar veya jeton isteme, sohbete ya da günlüğe yazma; .env alanlarını göster, değerleri ben yerel olarak gireyim. Gizli dosyaları Git'e ekleme. Masaüstümde fare, klavye veya ekran kaydı kullanma; görselleri headless üret.
 5. Onaylanan stille, kanal adımı içeren 10 saniyelik 9:16 deneme videosunu rehberdeki kalite kontrollerinden geçirip yerel çıktı olarak sun. Hazır ses yoksa sessiz yazıyla üret; ücretli ses çağrısı veya başka harcama öncesinde kapsamı ve tahmini kullanımı onaylat. Gerçek çıktı oluşmazsa başarı iddia etme; hatayı ve kalan adımı yaz.
 6. Kurulumda yükleme veya yayın yapma. YouTube API, günlük ölçüm ve ajan postasını yalnız ben seçtiysem rehbere göre yapılandır; hesap yetkileri ve zamanlanmış görev için somut adımı önce onaylat. Görev başına ayrı posta kimliği kullan; mevcut izleyiciyi çoğaltma, boş kutu için model çağırma. Sonraki her yükleme ve yayın da açık onayımı gerektirir; --yes tek başına onay değildir.

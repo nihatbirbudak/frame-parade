@@ -138,9 +138,9 @@ Eşlemeler gerçek `kanal.json` şemasına dayanır. Yalnız listelenen mevcut a
 
 ## F. Metin
 
-### 11 — Metni hazırlayan · Zorunlu seçim
+### 11 — Metni hazırlayan · Varsayılan: aynı model
 
-**Soru:** Metinleri siz mi yazacaksınız, bu model mi yazsın, yoksa Codex gibi ikinci bir modelle mi çalışmak istersiniz?
+**Soru:** Önce metinleri, ardından görselleri bu model hazırlasın; siz inceleyin. Böyle başlayalım mı? İsterseniz metinleri kendiniz yazabilir veya daha sonra ikinci bir model ekleyebilirsiniz.
 
 **Neden:** Metin, tasarım ve kontrol sorumlularını belirleyeceğiz.
 
@@ -148,7 +148,7 @@ Eşlemeler gerçek `kanal.json` şemasına dayanır. Yalnız listelenen mevcut a
 
 **Mevcut JSON anahtarları:** Yok; yönetim belgelerini kullan.
 
-**Kayıt / koşullar:** yonetim/ROLLER.md: yönetici, yazar, üretim, kontrol ve yayın sorumlusu. Roller otomatik olarak ayrı ücretli oturum açmaz. İkinci model yoksa metin ve tasarım sırayla yapılır.
+**Kayıt / koşullar:** yonetim/ROLLER.md: yönetici, yazar, üretim, kontrol ve yayın sorumlusu. Varsayılan yazar ve üretici aynı modeldir; bu işleri sırayla yapar, kullanıcı sonucu inceler. Verilmiş tercihi yeniden sorma. Codex gibi ikinci model yalnız kullanıcı seçerse eklenir. Ajan postası isteğe bağlıdır; ilk kurulumun önkoşulu yapılmaz. Otomatik olarak ek ücretli oturum açma.
 
 ## 12–15 için verilen cevapları kullan
 
