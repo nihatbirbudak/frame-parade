@@ -24,8 +24,8 @@ Kendi metinlerinizi, çekimlerinizi ve kimliğinizi eklersiniz. Dağıtılan kit
 | Araç | Ne için? |
 |---|---|
 | [Claude Code](https://code.claude.com/docs/en/setup) ve kullanılabilir erişim | Kurulum görüşmesi ve proje içinde çalışma. |
-| Node.js ve npm | Kitin üretim araçları. Desteklenen sürüm KURULUM.md'de belirtilecek. |
-| ffmpeg ve ffprobe | Video/ses işlemleri ve çıktı denetimi. |
+| Node.js 20+ ve npm | package.json gereksinimi; denetimler KURULUM.md içinde. |
+| ffmpeg-static (npm bağımlılıklarıyla kurulur) | Render için ffmpeg sağlar. ffprobe ayrıdır; sessiz örnek için gerekli değildir. |
 | Google Chrome | Animasyonları masaüstünü kullanmadan, headless olarak işleme. |
 | Git | Tek prompt akışında depoyu indirme. |
 | İnternet ve boş disk alanı | Depo/bağımlılık indirme ve yerel çıktı dosyaları. Gereksinim denetimde raporlanır. |
@@ -45,8 +45,8 @@ Node.js bu kitin araçları içindir; Claude Code'un bütün kurulum yöntemleri
 Bu boş proje klasörüne https://github.com/nihatbirbudak/frame-parade deposundaki Frame Parade video kitini kur.
 
 1. Hedef boş değilse veya depoya erişilemiyorsa dur ve durumu açıkla. Dosya silme, üzerine yazma veya başka depo seçme. Git yoksa kurulum yolunu göster; kurulduktan sonra devam et. Depoyu bu klasöre indir; önce depo kökündeki KURULUM.md, CLAUDE.md, KURALLAR.md ve LICENSE dosyalarını oku. Eksik rehber veya çelişki varsa varsayarak ilerleme.
-2. İşletim sistemi, boş disk ve rehberdeki Node.js/npm, ffmpeg/ffprobe, Chrome ve Git gereksinimlerini denetle. Eksikleri ve yapılacak kurulumu göster; sistem yazılımı kurmadan veya paket kurulum betiklerini çalıştırmadan önce onayımı al. Yalnız rehberdeki mevcut komutları kullan; komut uydurma.
-3. KURULUM.md akışına göre kurulum/sorular.md dosyasındaki soruları sırayla, bir mesajda tek konu sor. Daha önce verdiğim cevabı yeniden isteme. İsteğe bağlıları atlayabilirim; eksik tercihler için önerini açıkça belirt. Yanıtları rehberin şemasına göre kanal.json, VIDEO-KIMLIGI.md, referanslar.md ve ROLLER.md dosyalarına kaydet. Kaynak dosyalarımı değiştirme.
+2. İşletim sistemi, boş disk, Node.js 20+/npm, Chrome ve Git gereksinimlerini denetle. Paketle gelen ffmpeg kurulumunu ve kontrolünü rehbere göre yap; ffprobe yalnız seçilen sonraki bir iş akışı gerektirirse denetlenir. Eksikleri ve yapılacak kurulumu göster; sistem yazılımı kurmadan veya paket kurulum betiklerini çalıştırmadan önce onayımı al. Yalnız rehberdeki mevcut komutları kullan; komut uydurma.
+3. KURULUM.md akışında Türkçe için kurulum/sorular.md, İngilizce için kurulum/questions.md kullan; kullanıcının dilinde, bir mesajda tek konu sor. Daha önce verdiğim cevabı yeniden isteme. İsteğe bağlıları atlayabilirim; eksik tercihler için önerini açıkça belirt. Mevcut çalışma ayarlarını kanal.json içine; kimlik, referans ve rolleri yonetim/VIDEO-KIMLIGI.md, yonetim/referanslar.md ve yonetim/ROLLER.md içine kaydet. Gerçek şemaya uy; JSON alanı uydurma. Kaynak dosyalarımı değiştirme.
 4. Verdiğim referansları erişebildiğin ölçüde incele; erişemediğini belirt. Kısa bir stil kartı sun ve onayımı al. Anahtar veya jeton isteme, sohbete ya da günlüğe yazma; .env alanlarını göster, değerleri ben yerel olarak gireyim. Gizli dosyaları Git'e ekleme. Masaüstümde fare, klavye veya ekran kaydı kullanma; görselleri headless üret.
 5. Onaylanan stille, kanal adımı içeren 10 saniyelik 9:16 deneme videosunu rehberdeki kalite kontrollerinden geçirip yerel çıktı olarak sun. Hazır ses yoksa sessiz yazıyla üret; ücretli ses çağrısı veya başka harcama öncesinde kapsamı ve tahmini kullanımı onaylat. Gerçek çıktı oluşmazsa başarı iddia etme; hatayı ve kalan adımı yaz.
 6. Kurulumda yükleme veya yayın yapma. YouTube API, günlük ölçüm ve ajan postasını yalnız ben seçtiysem rehbere göre yapılandır; hesap yetkileri ve zamanlanmış görev için somut adımı önce onaylat. Görev başına ayrı posta kimliği kullan; mevcut izleyiciyi çoğaltma, boş kutu için model çağırma. Sonraki her yükleme ve yayın da açık onayımı gerektirir; --yes tek başına onay değildir.
@@ -58,12 +58,12 @@ Sonunda kurulanları, atlananları ve deneme videosunun yolunu özetle. Deneme v
 
 | Dosya | İçerik |
 |---|---|
-| `kanal.json` | Kanal, platform, görünüm, ses ve çalışma tercihleri. |
-| `VIDEO-KIMLIGI.md` | Onayladığınız anlatım ve görsel stil. |
-| `referanslar.md` | Referans bağlantıları ve sevdiğiniz özellikler. |
-| `ROLLER.md` | Metin, üretim, kontrol ve yayın sorumlulukları. |
+| `kanal.json` | Mevcut kimlik, görünüm/ses parametreleri, YouTube metadata varsayılanları ve yollar. |
+| `yonetim/VIDEO-KIMLIGI.md` | Onayladığınız anlatım ve görsel stil. |
+| `yonetim/referanslar.md` | Referans bağlantıları ve sevdiğiniz özellikler. |
+| `yonetim/ROLLER.md` | Metin, üretim, kontrol ve yayın sorumlulukları. |
 
-Kurulum rehberi depo kökündeki `KURULUM.md`, sorular `kurulum/sorular.md` yolunda olacak. Çalışma sınırları `KURALLAR.md` ve `CLAUDE.md`, çıktı denetimi `KALITE-KAPISI.md` içinde yer alacak. Sürümün desteklediği komutlar ve işletim sistemleri gerçek deneme sonuçlarıyla bu rehbere yazılacak.
+Kök rehber [KURULUM.md](KURULUM.md); sorular [Türkçe](kurulum/sorular.md) ve [İngilizce](kurulum/questions.md). İş akışı tercihleri yukarıdaki üç yonetim/ belgesinde tutulur; ek JSON düğmeleri değildir. Çalışma kuralları [KURALLAR.md](KURALLAR.md) ve [CLAUDE.md](CLAUDE.md), çıktı denetimi [KALITE-KAPISI.md](KALITE-KAPISI.md) içindedir. Rehberdeki komutlar güncel kaynaktan okunmuştur. İşletim sistemi desteği ve kurulum başarısı gerçek denemeyle ayrıca doğrulanmalıdır.
 
 ## Güvenli çalışma
 
