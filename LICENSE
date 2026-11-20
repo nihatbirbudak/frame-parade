@@ -1,21 +1,126 @@
-MIT License
+FRAME PARADE COMMUNITY USE LICENSE
+Version 1.0
 
-Copyright (c) 2026 nihatbirbudak
+Copyright (c) 2026 Frame Parade copyright holders.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+1. Scope
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+This License covers the Frame Parade code, templates, tools and documentation
+expressly provided under it (the "Software"), including modified versions and
+substantial portions. Each copyright holder (a "Licensor") grants only rights
+that holder can grant. Separately licensed components retain their own terms.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+"You" means an individual or a single legal entity. Employees may act for their
+employer's permitted activities. Clients and separate entities are not included
+merely because you work with them or manage their accounts. By exercising these
+permissions, you accept their conditions.
+
+2. Free use for your own work
+
+Subject to this License, each Licensor grants you worldwide, non-exclusive
+copyright permission, without license fees, to inspect, copy, install, run and
+modify the Software for your own personal projects, accounts, channels and
+business activities, and to share it under section 3.
+
+Your business may be commercial. You may make your own promotional material,
+internal training, products and editorial content. You may earn advertising,
+subscription or other revenue from your own publications, including your own
+courses. This does not permit selling or bundling the Software itself, or client
+production prohibited by section 4. An agency may make its own promotional videos.
+
+You may keep private modifications private. You may also give genuinely free,
+noncommercial help to others, including setup or video production, provided it is
+not part of a paid engagement, bundle, sales promotion or exchange for commercial
+benefit. Using generic computing or AI services as technical processors for
+permitted work is allowed; their fees and terms remain separate.
+
+3. Free sharing and contributions
+
+You may fork, copy and redistribute original or modified Software free of charge,
+including through public repositories and pull requests, if you:
+
+(a) include this complete License and preserve copyright, attribution and
+    third-party notices;
+(b) identify Frame Parade as the source and include the original project link:
+    https://github.com/nihatbirbudak/frame-parade;
+(c) clearly identify your changes and do not imply official authorship or approval;
+(d) provide the covered source code, including your changes, in the form normally
+    used to edit it, with no charge or paid-access condition; and
+(e) offer your changes to the Software under this same License, without additional
+    restrictions on the rights it grants. Independent components keep their terms.
+
+You may describe and link to your free fork under these conditions. You may not
+market it as a paid product or service, charge for access or delivery, or include
+it as a paid package's component or bonus. Each recipient receives the covered
+permissions from the relevant copyright holders under this License.
+
+If you intentionally submit a contribution for inclusion in the official project,
+you offer it under this same License. You confirm that you have the right to do so
+and permit the project maintainer, nihatbirbudak, to use, modify, merge and
+redistribute it as part of Frame Parade under this License. You retain ownership
+of your contribution. Submission does not transfer copyright or grant a separate
+right to relicense your contribution under different terms.
+
+4. No commercial resale or service business
+
+This License does not permit you to:
+
+(a) sell, rent, sublicense under different terms, or otherwise charge for the
+    Software or a modified version, including within a paid product or bundle;
+(b) offer the Software or its functionality as a paid hosted service, API,
+    subscription, installation, customization, support or managed service; or
+(c) use the Software to create, edit, render or deliver content for clients as
+    paid agency, freelance, commissioned or other commercial production services.
+
+These restrictions cover indirect payment, bundled fees, commercial barter and
+nominally free delivery used to sell a paid offering. Modifying or renaming the
+Software, using an intermediary, or delivering only the finished video does not
+avoid them. Paid client production remains prohibited when the finished content
+is published on your own account. Publishing and monetizing your own editorial
+content is not by itself a client production service.
+
+5. Your videos and other output
+
+"Output" means finished audiovisual files, images, subtitles and original
+narration produced in a permitted use. It excludes the Software, reusable code,
+editable software templates and project files containing the Software; sharing
+those files is governed by section 3. A template's rendered appearance in a
+finished video does not by itself turn that video into Software.
+
+As between you and the Licensor, your original inputs and Output belong to you
+to the extent rights can exist under applicable law. You may publish and monetize
+permitted Output. The Licensor claims no ownership or revenue share merely from
+use of the Software, and this License requires no credit in finished videos.
+This section does not authorize prohibited client production.
+
+Third-party assets, voices, fonts and service outputs remain subject to their own
+rights and terms. This License cannot guarantee copyright in AI-generated material
+or grant rights owned by someone else.
+
+6. Reserved rights
+
+No trademark right or permission to imply endorsement is granted. Rights held
+independently under law or a separate grant remain unaffected. Uses outside this
+License require separate written permission from the relevant rights holders;
+permission is not promised. The same conditions apply to modified Software.
+
+7. Breach
+
+Permissions under this License end upon breach. Stop the unauthorized activity
+and the use or distribution of copies covered by this License. Resuming those
+permissions requires written authorization from the relevant Licensor. A breach
+does not transfer ownership of your original material or cancel a compliant
+recipient's independent license.
+
+8. Warranty and responsibility
+
+The Software is supplied without a promise of accuracy, security, uninterrupted
+operation or suitability. You are responsible for reviewing your content and
+complying with applicable laws and third-party terms. To the extent the law
+allows, the Licensor excludes warranties and liability for losses from the
+Software or its use. Mandatory rights that cannot be excluded remain unaffected.
+
+9. Controlling text
+
+This English LICENSE is the controlling text. Translations and summaries explain
+it and do not change its permissions or conditions.
