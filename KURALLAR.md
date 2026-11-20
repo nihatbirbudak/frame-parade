@@ -1,29 +1,27 @@
-# Working rules
+# Your working rules
 
-## User decisions
+## You make the decisions
 
-Use existing authorization within its stated scope. Explain missing prerequisites and obtain the required approval before installing system software, making paid service calls or granting account access. State the concrete action and expected cost or usage where relevant.
+You choose the channel, language, style, services and division of work. The assistant reuses your answers and any authorization that already covers the action.
 
-Every upload and publication needs explicit approval for the actual prepared content, destination and visibility or schedule. API access, a successful dry run, silence and the --yes flag are not approval. A private upload still transfers content to an external service. Do not upload the setup sample.
+Before spending money, installing system software or granting account access, the assistant explains the concrete step and obtains any missing approval. Optional services can remain off.
 
-## Files and credentials
+Uploads need your approval covering the prepared content, destination and visibility or schedule. An existing authorization can cover multiple uploads when you explicitly set that scope. A private upload still sends a file to an external service. The setup sample stays local.
 
-Preserve source material. Do not delete, move or overwrite a user's existing assets or output without authorization. Check expected output paths before commands that replace files.
+## Your files and accounts stay under your control
 
-The user enters credentials locally. Never request or expose keys, tokens, OAuth secrets or authorization codes in chat, reports or screenshots. Do not dump .env or process environment values. Keep credential files, personal media and private analytics outside shared source distributions.
+Existing assets and outputs are preserved unless you authorize replacement. Enter credentials locally; keys, tokens and authorization codes must not appear in chat, screenshots or reports. Private media and analytics stay outside shared source distributions.
 
-## Work and quality
+Rendering uses a dedicated headless browser. The assistant does not control your desktop, mouse or keyboard or record your screen.
 
-Use the actual schema and documented commands. An unsupported preference belongs in the management documents; do not create a JSON flag and claim it enables a feature.
+## You receive a checked result
 
-Keep writing, design/production and review responsibilities explicit. Check the real video and audio using KALITE-KAPISI.md. Report unverified claims and unavailable inspections. Do not invent measurements, provider availability, installation success or audience results.
+Writing, production and review have clear owners. KALITE-KAPISI.md records what was checked and what remains unverified. New voices and effects need a listening review. Facts, measurements and audience results must not be invented.
 
-Use licensed assets and follow LICENSE. Listen with the owner before adopting new audio. Avoid repeat paid generation when unchanged, verified output already exists.
+Use assets you have rights to and follow LICENSE. Unchanged, verified output is reused before repeating paid generation.
 
-## Computer and integrations
+## Recurring work is a separate choice
 
-Render in a dedicated headless browser. Do not automate the user's desktop, mouse or keyboard or record their screen.
+Analytics collection, uploads and agent-post are enabled only within your chosen scope and schedule. Existing suitable tasks are reused. Each agent reads only its own mailbox; empty checks do not invoke a model.
 
-Daily collection, uploads and agent-post are separate choices. Explain the proposed task and schedule before enabling recurring work. Reuse an existing suitable task; do not duplicate watchers. Agent-post uses one identity per task and reads only its own inbox. Empty inbox checks must not invoke a model.
-
-After a partially successful remote action, inspect the receipt and actual remote state before retrying. Do not create duplicate uploads to repair a later failed metadata step.
+After a partial upload, the assistant checks the receipt and remote result before retrying.
