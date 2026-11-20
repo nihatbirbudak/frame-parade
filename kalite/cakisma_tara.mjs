@@ -1,13 +1,13 @@
 // Overflow/overlap scan: every N seconds it collects the visible text boxes (.y, .cip, .kutu .et) in each frame and flags:
-// (1) two texts overlapping (intersection > 4 px x 4 px); (2) text outside the safe area (x < 96, x > 1824,
-// y < 40, y > 960); (3) text crossing the long horizontal/vertical lines in the scene (path, straight segment >= 300 px), e.g. a tank floor.
-//   node motor/cakisma_tara.mjs <project> <part> [interval 2] [--haric "text"]
+// (1) two texts overlapping (intersection > 4 px x 4 px); (2) text outside the safe area of the project format
+// (motor/lib.mjs › GUVENLI: landscape 96..1824 × 40..960, portrait 72..950 × 154..1590); (3) text crossing the long horizontal/vertical lines in the scene (path, straight segment >= 300 px), e.g. a tank floor.
+//   node kalite/cakisma_tara.mjs <project> <part> [interval 2] [--haric "text"]
 import { ac } from '../motor/lib.mjs';
 const [PROJE, PARCA, ARA = 2] = process.argv.slice(2);
 const HARIC = process.argv.includes('--haric') ? process.argv[process.argv.indexOf('--haric') + 1] : null;
-const { page, kapat } = await ac(`proje=${PROJE}&parca=${PARCA}`);
+const { page, kapat, G, bicim } = await ac(`proje=${PROJE}&parca=${PARCA}`);
 const sure = await page.evaluate(() => window.VIDEO.sure);
-const sonuc = await page.evaluate(async (ara, sure, haric) => {
+const sonuc = await page.evaluate(async (ara, sure, haric, G) => {
   const gor = (e) => {
     let o = 1, n = e;
     while (n && n !== document.body) { const cs = getComputedStyle(n); if (cs.visibility === 'hidden' || cs.display === 'none') return false; o *= +cs.opacity; n = n.parentElement; }
@@ -39,7 +39,7 @@ const sonuc = await page.evaluate(async (ara, sure, haric) => {
     const R = els.map((e) => ({ e, b: kutuAl(e), y: e.textContent.trim().slice(0, 28) }));
     for (let i = 0; i < R.length; i++) {
       const a = R[i].b;
-      if (a.left < 96 - 2 || a.right > 1824 + 2 || a.top < 40 || a.bottom > 960) kayit.push({ t, tur: 'outside safe area', yazi: R[i].y, kutu: [a.left, a.top, a.right, a.bottom].map(Math.round) });
+      if (a.left < G.x0 - 2 || a.right > G.x1 + 2 || a.top < G.y0 || a.bottom > G.y1) kayit.push({ t, tur: 'outside safe area', yazi: R[i].y, kutu: [a.left, a.top, a.right, a.bottom].map(Math.round) });
       for (let j = i + 1; j < R.length; j++) { const b = R[j].b; if (R[i].e.contains(R[j].e) || R[j].e.contains(R[i].e)) continue;
         const w = Math.min(a.right, b.right) - Math.max(a.left, b.left), h = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
         if (w > 4 && h > 4) kayit.push({ t, tur: 'text overlap', yazi: `${R[i].y} ↔ ${R[j].y}`, alan: Math.round(w) + '×' + Math.round(h) }); }
@@ -49,8 +49,10 @@ const sonuc = await page.evaluate(async (ara, sure, haric) => {
       if (!c.yatay && c.x > b.left + 3 && c.x < b.right - 3 && b.bottom > c.y0 && b.top < c.y1) kayit.push({ t, tur: 'crosses a line', yazi: r.y, cizgi: `x=${Math.round(c.x)}` }); }
   }
   return kayit;
-}, Number(ARA), sure, HARIC);
+}, Number(ARA), sure, HARIC, G);
 await kapat();
 const ozet = {}; for (const k of sonuc) { const a = `${k.tur} · ${k.yazi}${k.cizgi ? ' · ' + k.cizgi : ''}`; (ozet[a] ||= []).push(k.t); }
-console.log(`scan: ${Math.floor(sure / ARA) + 1} frames (${ARA} s apart), findings ${sonuc.length}, distinct ${Object.keys(ozet).length}`);
+console.log(`scan (${bicim}, safe area x ${G.x0}..${G.x1}, y ${G.y0}..${G.y1}): ${Math.floor(sure / ARA) + 1} frames (${ARA} s apart), findings ${sonuc.length}, distinct ${Object.keys(ozet).length}`);
 for (const [a, ts] of Object.entries(ozet)) console.log(`  ${a}  @ ${ts.map((t) => t.toFixed(0)).join(',')}`);
+// exit code 1 when anything is found, so a quality gate can read the result automatically
+process.exit(sonuc.length ? 1 : 0);

@@ -10,10 +10,10 @@ export function kur({ tl, B, sahne, KANAL }) {
   kunye(A, tl, 10, BUYUK(KANAL.seri || KANAL.ad));
   kanca(A, tl, `${M('hello')}\n${KANAL.ad}`, 3.2, { top: 420 });
   // line + counter: the engine's two basic moves (drawing and a flowing number)
-  const cz = B.yol(s, 'M120,1000 L960,1000', 'c v'); B.ciz(tl, cz, 3.4, 0.8);
+  const cz = B.yol(s, 'M120,1040 L960,1040', 'c v'); B.ciz(tl, cz, 3.4, 0.8);
   const say = B.yazi(A, '0', { x: 540, y: 880, boy: 220, sayi: true, hiza: 'orta', dikey: 'orta' });
   B.ac(tl, say, 3.5, { tur: 'olcek', d: 0.4 }); B.sayac(tl, say, 3.6, 0, 100, 1.6);
-  const et = B.yazi(A, M('first_video_ready'), { x: 540, y: 1080, boy: 56, ag: 700, renk: 'ik', hiza: 'orta' }); B.ac(tl, et, 4.4, { d: 0.5 });
+  const et = B.yazi(A, M('first_video_ready'), { x: 540, y: 1100, boy: 56, ag: 700, renk: 'ik', hiza: 'orta' }); B.ac(tl, et, 4.4, { d: 0.5 });
   B.vurgula(tl, say, 5.2); B.sondur(tl, say, 6.0, 0.3, R.metin);
   // subscribe closing: button appears at 6.6 s, the cursor clicks at 7.8 s
   const a = aboneDugmesi(A, { y: 1300 }); aboneGoster(tl, a, 6.6, 7.8);

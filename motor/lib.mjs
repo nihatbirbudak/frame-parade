@@ -12,6 +12,10 @@ export const MOTOR = path.dirname(fileURLToPath(import.meta.url));
 export const ROOT = KOK;
 export const FFMPEG = ffmpegYolu;
 export const BICIM = { yatay: { W: 1920, H: 1080 }, dikey: { W: 1080, H: 1920 } };
+// Text safe areas used by the quality checks. Landscape: 96 px sides, 40 px top, bottom 120 px left for the player controls.
+// Portrait (Shorts): top ~8% (status bar, search), right ~12% (like/comment/share column), bottom 330 px (~17%: title,
+// channel row and buttons; matches dikey.css, where subtitles end at y 1590), left 72 px.
+export const GUVENLI = { yatay: { x0: 96, x1: 1824, y0: 40, y1: 960 }, dikey: { x0: 72, x1: 950, y0: 154, y1: 1590 } };
 // project format: <project>/proje.json › bicim (landscape if missing)
 export function projeBicimi(ad) { const f = path.join(PROJELER, ad, 'proje.json'); return fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, 'utf8')).bicim || 'yatay' : 'yatay'; }
 
@@ -42,7 +46,7 @@ export function sunucu() {
 
 // query: proje=<name>&parca=<name>
 export async function ac(sorgu) {
-  const q = new URLSearchParams(sorgu), { W, H } = BICIM[projeBicimi(q.get('proje'))];
+  const q = new URLSearchParams(sorgu), bicim = projeBicimi(q.get('proje')), { W, H } = BICIM[bicim];
   const { srv, port } = await sunucu();
   const browser = await puppeteer.launch({
     executablePath: chromeYolu(), headless: true, protocolTimeout: 0,
@@ -58,5 +62,5 @@ export async function ac(sorgu) {
   const hata = await page.evaluate(() => window.VIDEO.hata);
   if (hata) { await browser.close(); srv.close(); throw new Error('page: ' + hata); }
   await page.evaluate(async () => { await document.fonts.ready; });
-  return { browser, page, W, H, kapat: async () => { await browser.close(); srv.close(); } };
+  return { browser, page, W, H, bicim, G: GUVENLI[bicim], kapat: async () => { await browser.close(); srv.close(); } };
 }

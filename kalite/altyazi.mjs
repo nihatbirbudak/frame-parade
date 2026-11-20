@@ -41,12 +41,23 @@ for (const zb of Z.bloklar || []) {
   }
 }
 for (let i = 0; i < cues.length; i++) { const c = cues[i], n = cues[i + 1]; c.t1 = Math.max(c.t1 + 0.25, c.t0 + 1.0); if (n && c.t1 > n.t0 - 0.04) c.t1 = n.t0 - 0.04; }
+// minimum 1 s on screen: a shorter cue is merged with the next (or else the previous) cue when the merged text still fits two lines
+const kelime = (c) => c.metin.replace(/\n/g, ' ').split(' ');
+for (let i = 0; i < cues.length; i++) {
+  const c = cues[i]; if (c.t1 - c.t0 >= 1.0) continue;
+  for (const j of [i + 1, i - 1]) {
+    const d = cues[j]; if (!d) continue;
+    const [x, y] = j > i ? [c, d] : [d, c], s = bol2([...kelime(x), ...kelime(y)]); if (!s) continue;
+    x.metin = s.join('\n'); x.t1 = y.t1; cues.splice(cues.indexOf(y), 1); i -= j < i ? 2 : 1; break;
+  }
+}
+const kisa = cues.filter((c) => c.t1 - c.t0 < 1.0 - 1e-6).length;
 fs.writeFileSync(path.join(OUT, 'altyazi.srt'), cues.map((c, i) => `${i + 1}\n${zs(c.t0)} --> ${zs(c.t1)}\n${c.metin}\n`).join('\n'), 'utf8');
 const srtMetin = cues.map((c) => c.metin.replace(/\n/g, ' ')).join(' ').replace(/\s+/g, ' ');
 const sesMetin = (Z.bloklar || []).map((zb) => M.bloklar.find((b) => b.id === zb.id).cumleler.join(' ')).join(' ').replace(/\s+/g, ' ');
 if (srtMetin !== sesMetin) throw new Error('subtitle text does not match the narration text exactly');
 const maxS = cues.length ? Math.max(...cues.map((c) => Math.max(...c.metin.split('\n').map((s) => s.length)))) : 0;
-console.log(`altyazi.srt: ${cues.length} cues, longest line ${maxS} characters; text matches the narration exactly`);
+console.log(`altyazi.srt: ${cues.length} cues, longest line ${maxS} characters, under 1 s: ${kisa}${kisa ? ' (could not be merged: warning)' : ''}; text matches the narration exactly`);
 if (fs.existsSync(path.join(DIR, 'ceviri-en.json'))) {
   const r = spawnSync(process.execPath, [path.join(path.dirname(fileURLToPath(import.meta.url)), 'altyazi_en.mjs'), PROJE], { stdio: 'inherit' });
   if (r.status) process.exit(r.status);

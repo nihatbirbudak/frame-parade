@@ -48,5 +48,7 @@ geri.forEach((g, i) => {
   for (const s of g.metin) { if (s.length > SATIR) throw new Error(`verification: ${g.no} line is ${s.length} characters`); enUzun = Math.max(enUzun, s.length); }
   if (g.metin.join(' ') !== en[i].trim()) throw new Error(`verification: ${g.no} text was altered`);
 });
-if (/[ğüşıöçĞÜŞİÖÇ]/.test(geri.map((g) => g.metin.join(' ')).join(' '))) throw new Error('verification: Turkish letters remain in the English text');
+// Turkish letters in the English text are only a warning (proper names such as places or people may keep them)
+const trHarf = geri.filter((g) => /[ğüşıöçĞÜŞİÖÇ]/.test(g.metin.join(' ')));
+if (trHarf.length) console.log(`warning: Turkish letters in ${trHarf.length} English cue(s) (fine for proper names): ${trHarf.slice(0, 5).map((g) => g.no).join(', ')}`);
 console.log(`altyazi-en.srt: ${geri.length} cues (TR ${tr.length}), ${geri.length} timestamps identical, longest line ${enUzun} characters`);
