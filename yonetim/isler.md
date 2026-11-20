@@ -1,4 +1,4 @@
-# İşler
+# Tasks
 
-| Konu | Durum | Sonraki adım | Sahip |
+| Topic | Status | Next step | Owner |
 |---|---|---|---|

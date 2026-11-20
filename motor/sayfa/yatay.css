@@ -1,7 +1,7 @@
-/* Yatay (16:9, 1920×1080) sahne. Belirteçler kimlik.css + kanal.json. */
+/* Horizontal (16:9, 1920×1080) scene. Tokens from kimlik.css + kanal.json. */
 html, body { width: 1920px; height: 1080px; overflow: hidden; }
 #sahne { position: absolute; inset: 0; width: 1920px; height: 1080px; background: var(--zemin); overflow: hidden; }
-.k { position: absolute; left: 0; top: 0; }                  /* katman: tam sahne */
+.k { position: absolute; left: 0; top: 0; }                  /* layer: full scene */
 .kat { position: absolute; inset: 0; }
 .y { position: absolute; white-space: nowrap; line-height: 1; color: var(--metin); font-family: var(--baslik); }
 .y.sayi { font-family: var(--sayi); font-variant-numeric: tabular-nums; font-weight: 500; }

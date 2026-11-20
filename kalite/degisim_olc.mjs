@@ -1,7 +1,7 @@
-// Saniye başına görsel değişim ölçümü : video 1 kare/sn örneklenir, 64×36 gri,
-// ardışık iki örnekte 12 seviyeden fazla değişen piksel oranı. "Değişen saniye" = oran > %0,5; "büyük değişim" = > %5.
-// Referans (YouTube) tarafı aynı ölçüyle tarayıcıda canvas'tan alındı; kare dosyaya yazılmadı.
-//   node motor/degisim_olc.mjs <video.mp4> [baş sn] [son sn]
+// Visual change per second: the video is sampled at 1 frame/s, 64x36 grey,
+// fraction of pixels that change by more than 12 levels between two consecutive samples. "Changing second" = ratio > 0.5%; "big change" = > 5%.
+// The reference (YouTube) side was measured the same way via canvas in the browser; no frame was written to a file.
+//   node motor/degisim_olc.mjs <video.mp4> [start s] [end s]
 import { spawnSync } from 'node:child_process';
 import { FFMPEG } from '../motor/lib.mjs';
 

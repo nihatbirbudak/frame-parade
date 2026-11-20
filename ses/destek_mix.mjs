@@ -1,7 +1,7 @@
-// Destek kartı sesi: seçilen alımı karta hazırlar. Virgülde duraklama açılır (ham alımda 0,04–0,08 sn), tempo atempo ile
-// yumuşatılır (VIDEO-KIMLIGI §3: ±%8), düzey −15 LUFS. Kelime zamanları aynı dönüşümle taşınır; tıklama anları kelimelere
-// kilitlenir (abone → "Abone", beğen → "beğenirseniz"). Ayrıca hafif "tık" sesi üretir (kısa, kendi sentezimiz).
-//   node ses/destek_mix.mjs <proje> A A-11      → <projeler>/<proje>/destek/destek-A.wav + destek-A.json
+// Support card audio: prepares the chosen take for the card. A pause is opened at the comma (0.04–0.08 s in the raw take), tempo is
+// smoothed with atempo (VIDEO-KIMLIGI §3: ±8%), level −15 LUFS. Word times are carried over with the same transform; click moments are
+// locked to words (subscribe → "Abone", like → "beğenirseniz"; these are Turkish words from the narration). It also generates a soft "click" sound (short, our own synthesis).
+//   node ses/destek_mix.mjs <project> A A-11      → <projeler>/<project>/destek/destek-A.wav + destek-A.json
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -26,13 +26,14 @@ ff(['-i', ham, '-af', `volume=${kazanc.toFixed(2)}dB`, '-c:a', 'pcm_s16le', cikt
 const m1 = olc(cikti);
 const tas = (t) => +(((t < kes ? t : t + DURAK)) / TEMPO).toFixed(3);
 const kel = kelimeler.map((w) => ({ w: w.w, t0: tas(w.t0), t1: tas(w.t1) }));
+// bul() matches Turkish spoken words (the narration is Turkish), hence the Turkish locale and the Turkish prefixes below
 const bul = (on) => kel.find((w) => w.w.toLocaleLowerCase('tr').startsWith(on));
 const tiklar = [['abone', +(bul('abone').t0 + 0.03).toFixed(3)], ['begen', +(bul('beğen').t0 + 0.03).toFixed(3)]];
 const sure = kel[kel.length - 1].t1;
-// tık: 1,8 kHz kısa sinüs + çok kısa gürültü, ~60 ms; tepe −20 dBFS
+// click: a short 1.8 kHz sine + a very short noise burst, ~60 ms; peak −20 dBFS
 const TIK = path.join(DIR, 'tik.wav');
 if (!fs.existsSync(TIK)) ff(['-f', 'lavfi', '-i', "aevalsrc='0.55*sin(2*PI*1800*t)*exp(-t*90)+0.25*(random(0)*2-1)*exp(-t*260)|0.55*sin(2*PI*1800*t)*exp(-t*90)+0.25*(random(1)*2-1)*exp(-t*260)':s=48000:d=0.06", '-af', 'volume=-14dB', '-c:a', 'pcm_s16le', TIK]);
 const kayit = { surum: SURUM, alim: ALIM, metin: kelimeler.map((w) => w.w).join(' '), durak_sn: DURAK, tempo: TEMPO, kazanc_db: +kazanc.toFixed(2), lufs: m1.I, tepe: m1.TP,
   sure, hece_sn: +((kelimeler.map((w) => w.w).join(' ').toLocaleLowerCase('tr').match(/[aeıioöuüâîû]/g) || []).length / (sure - kel[0].t0)).toFixed(2), kelimeler: kel, tiklar };
 fs.writeFileSync(path.join(DIR, `destek-${SURUM}.json`), JSON.stringify(kayit, null, 1));
-console.log(`${SURUM} (${ALIM}): ${sure.toFixed(2)} sn, ${kayit.hece_sn} hece/sn, ${m1.I} LUFS, tepe ${m1.TP}; tıklar ${JSON.stringify(tiklar)}`);
+console.log(`${SURUM} (${ALIM}): ${sure.toFixed(2)} s, ${kayit.hece_sn} syllables/s, ${m1.I} LUFS, peak ${m1.TP}; clicks ${JSON.stringify(tiklar)}`);

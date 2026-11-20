@@ -1,5 +1,5 @@
 {
- "_aciklama": "Kişiye özel tarama desenleri örneği. tara.yerel.json adıyla kopyalayıp kendi adlarınızı ekleyin; o dosya depoya girmez.",
+ "_aciklama": "Example of personal scan patterns. Copy it as tara.yerel.json and add your own names; that file is not committed to the repo.",
  "desenler": [],
  "izinli": {}
 }

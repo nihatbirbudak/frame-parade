@@ -1,3 +1,3 @@
-# Kurulum
+# Setup
 
-Bu dosya yer tutucudur; kurulum metni ve tek prompt ayrı yazılacak.
+Placeholder; setup text and the single prompt will be written separately.

@@ -1,7 +1,7 @@
-// Taşma/çakışma taraması: N sn aralıkla her karede görünür yazı kutularını (.y, .cip, .kutu .et) toplar ve şunları
-// işaretler: (1) iki yazının üst üste binmesi (kesişim > 4 px × 4 px); (2) güvenli alan dışı yazı (x < 96, x > 1824,
-// y < 40, y > 960); (3) sahnedeki uzun yatay/dikey çizgileri (path, ≥ 300 px düz parça) kesen yazı (ör. depo tabanı).
-//   node motor/cakisma_tara.mjs <proje> <parça> [aralık 2] [--haric "eğer"]
+// Overflow/overlap scan: every N seconds it collects the visible text boxes (.y, .cip, .kutu .et) in each frame and flags:
+// (1) two texts overlapping (intersection > 4 px x 4 px); (2) text outside the safe area (x < 96, x > 1824,
+// y < 40, y > 960); (3) text crossing the long horizontal/vertical lines in the scene (path, straight segment >= 300 px), e.g. a tank floor.
+//   node motor/cakisma_tara.mjs <project> <part> [interval 2] [--haric "text"]
 import { ac } from '../motor/lib.mjs';
 const [PROJE, PARCA, ARA = 2] = process.argv.slice(2);
 const HARIC = process.argv.includes('--haric') ? process.argv[process.argv.indexOf('--haric') + 1] : null;
@@ -15,13 +15,13 @@ const sonuc = await page.evaluate(async (ara, sure, haric) => {
     const cp = getComputedStyle(e).clipPath; if (cp && cp !== 'none') { const v = (cp.match(/-?[\d.]+%/g) || []).map(parseFloat); if (v.some((x) => x > 2)) return false; }
     return true;
   };
-  // yazının gerçek mürekkep kutusu: Range ile metin düğümü (kutu .et için öğe kutusu değil, yazı kutusu)
+  // the real ink box of the text: the text node via Range (for box .et, the text box rather than the element box)
   const kutuAl = (e) => { const r = document.createRange(); r.selectNodeContents(e.childNodes[0] || e); const b = r.getBoundingClientRect(); return b.width ? b : e.getBoundingClientRect(); };
   const cizgiler = () => {
     const out = [];
     for (const p of document.querySelectorAll('svg path')) {
       if (!gor(p)) continue; const cs = getComputedStyle(p); if (cs.strokeOpacity === '0' || !p.getAttribute('d')) continue;
-      // DrawSVG: çizilmemiş ya da kısmen çizilmiş yol (dasharray ilk değeri < uzunluğun %95'i) sayılmaz
+      // DrawSVG: a path that is not drawn yet or only partly drawn (first dasharray value < 95% of the length) is ignored
       const da = cs.strokeDasharray; if (da && da !== 'none') { const v = da.split(/[ ,]+/).map(parseFloat); const L = p.getTotalLength(); if (v.length === 2 && v[0] < L * 0.95 && v[1] > L * 0.5) continue; }
       const m = p.getCTM(); if (!m) continue;
       const d = p.getAttribute('d'); const nok = [...d.matchAll(/([ML])\s*(-?[\d.]+)[ ,](-?[\d.]+)/g)].map((x) => ({ k: x[1], x: +x[2], y: +x[3] }));
@@ -39,18 +39,18 @@ const sonuc = await page.evaluate(async (ara, sure, haric) => {
     const R = els.map((e) => ({ e, b: kutuAl(e), y: e.textContent.trim().slice(0, 28) }));
     for (let i = 0; i < R.length; i++) {
       const a = R[i].b;
-      if (a.left < 96 - 2 || a.right > 1824 + 2 || a.top < 40 || a.bottom > 960) kayit.push({ t, tur: 'güvenli alan dışı', yazi: R[i].y, kutu: [a.left, a.top, a.right, a.bottom].map(Math.round) });
+      if (a.left < 96 - 2 || a.right > 1824 + 2 || a.top < 40 || a.bottom > 960) kayit.push({ t, tur: 'outside safe area', yazi: R[i].y, kutu: [a.left, a.top, a.right, a.bottom].map(Math.round) });
       for (let j = i + 1; j < R.length; j++) { const b = R[j].b; if (R[i].e.contains(R[j].e) || R[j].e.contains(R[i].e)) continue;
         const w = Math.min(a.right, b.right) - Math.max(a.left, b.left), h = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
-        if (w > 4 && h > 4) kayit.push({ t, tur: 'yazı üst üste', yazi: `${R[i].y} ↔ ${R[j].y}`, alan: Math.round(w) + '×' + Math.round(h) }); }
+        if (w > 4 && h > 4) kayit.push({ t, tur: 'text overlap', yazi: `${R[i].y} ↔ ${R[j].y}`, alan: Math.round(w) + '×' + Math.round(h) }); }
     }
     for (const c of cizgiler()) for (const r of R) { const b = r.b;
-      if (c.yatay && c.y > b.top + 3 && c.y < b.bottom - 3 && b.right > c.x0 && b.left < c.x1) kayit.push({ t, tur: 'çizgiyi kesiyor', yazi: r.y, cizgi: `y=${Math.round(c.y)}` });
-      if (!c.yatay && c.x > b.left + 3 && c.x < b.right - 3 && b.bottom > c.y0 && b.top < c.y1) kayit.push({ t, tur: 'çizgiyi kesiyor', yazi: r.y, cizgi: `x=${Math.round(c.x)}` }); }
+      if (c.yatay && c.y > b.top + 3 && c.y < b.bottom - 3 && b.right > c.x0 && b.left < c.x1) kayit.push({ t, tur: 'crosses a line', yazi: r.y, cizgi: `y=${Math.round(c.y)}` });
+      if (!c.yatay && c.x > b.left + 3 && c.x < b.right - 3 && b.bottom > c.y0 && b.top < c.y1) kayit.push({ t, tur: 'crosses a line', yazi: r.y, cizgi: `x=${Math.round(c.x)}` }); }
   }
   return kayit;
 }, Number(ARA), sure, HARIC);
 await kapat();
 const ozet = {}; for (const k of sonuc) { const a = `${k.tur} · ${k.yazi}${k.cizgi ? ' · ' + k.cizgi : ''}`; (ozet[a] ||= []).push(k.t); }
-console.log(`tarama: ${Math.floor(sure / ARA) + 1} kare (${ARA} sn arayla), bulgu ${sonuc.length}, farklı ${Object.keys(ozet).length}`);
+console.log(`scan: ${Math.floor(sure / ARA) + 1} frames (${ARA} s apart), findings ${sonuc.length}, distinct ${Object.keys(ozet).length}`);
 for (const [a, ts] of Object.entries(ozet)) console.log(`  ${a}  @ ${ts.map((t) => t.toFixed(0)).join(',')}`);

@@ -1,5 +1,5 @@
-/* Dikey (9:16, 1080×1920) sahne. Belirteçler kimlik.css + kanal.json. Güvenli alan: alt 300 px ve sağ 150 px
-   YouTube arayüzüne boş; üstte 140 px arama/kamera simgeleri. Yazılar x 72–930, y 150–1620 içinde. */
+/* Vertical (9:16, 1080×1920) scene. Tokens from kimlik.css + kanal.json. Safe area: bottom 300 px and right 150 px
+   are left empty for the YouTube UI; the top 140 px holds search/camera icons. Text stays within x 72–930, y 150–1620. */
 html, body { width: 1080px; height: 1920px; overflow: hidden; }
 #sahne { position: absolute; inset: 0; width: 1080px; height: 1920px; background: var(--zemin); overflow: hidden; }
 .kat { position: absolute; inset: 0; }
@@ -20,11 +20,11 @@ svg .c.ince { stroke: var(--cizgi); stroke-width: 1.5; }
 svg .olcu { stroke: var(--ikincil); stroke-width: 1.5; fill: none; }
 svg text { font-family: var(--sayi); fill: var(--ikincil); }
 
-/* kelime kelime altyazı: alt kenarı y 1590 (alt 300 px boş), yatay 72–918, en çok 2 satır, dengeli kırılım */
+/* word-by-word subtitles: bottom edge at y 1590 (bottom 300 px empty), horizontal 72–918, at most 2 lines, balanced line breaks */
 .alt { position: absolute; left: 72px; width: 846px; bottom: 330px; text-align: center; font-family: var(--baslik); font-weight: 800;
   font-size: 66px; line-height: 1.12; letter-spacing: -0.015em; color: var(--metin); text-wrap: balance; white-space: normal; }
 .alt span { display: inline-block; white-space: pre; }
-/* kanca ekran yazısı: ilk karede tam okunur */
+/* hook on-screen text: fully readable in the first frame */
 .kanca { position: absolute; left: 72px; width: 846px; top: 236px; text-align: center; font-family: var(--baslik); font-weight: 800;
   font-size: 86px; line-height: 1.06; letter-spacing: -0.025em; color: var(--metin); text-wrap: balance; white-space: normal; }
 .kunye { position: absolute; left: 72px; top: 160px; font-family: var(--sayi); font-weight: 600; font-size: 26px; letter-spacing: 0.08em; color: var(--ikincil); white-space: nowrap; }

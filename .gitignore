@@ -1,11 +1,11 @@
-# gizli bilgiler
+# secrets
 .env
 client_secret*.json
 token*
 *.token.json
 youtube/yetki-adres.txt
 
-# üretim çıktıları
+# production outputs
 cikti/
 *.wav
 *.mp4
@@ -14,10 +14,11 @@ ses/harcama.jsonl
 ses/efekt/ham/*
 !ses/efekt/ham/.gitkeep
 analitik/veri/
+analitik/OZET.md
 
-# bağımlılıklar
+# dependencies
 node_modules/
 
-# yerel tarama
+# local scan
 tara.yerel.json
 TARAMA.md

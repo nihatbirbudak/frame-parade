@@ -1,4 +1,4 @@
-# Studio'dan elle yapılacaklar
+# Manual to-dos in Studio
 
-Yükleme betiği satır ekler. Yükleme turunda yapılır, yapılınca işaretlenir.
+The upload script adds lines. They are done during the upload round and ticked off when done.
 

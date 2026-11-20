@@ -1,8 +1,8 @@
-// ElevenLabs ortak modülü: zaman damgalı TTS, ses ayarı, abonelik/kredi ölçümü, harcama günlüğü.
-// uyarlandı (kaynak: kaynak-eleven.mjs). Farklar: kök bu proje; harcama `ses/harcama.jsonl`; varsayılan model
-// `eleven_v4_turbo`; ses ayarı VERİLMEZSE sesin kendi varsayılanları (`GET /v1/voices/<id>/settings`) aynen gönderilir;
-// `speed` hiç gönderilmez.
-// Anahtar yalnız .env › ELEVENLABS_API_KEY'den okunur; hiçbir çıktıya, loga ya da hata mesajına yazılmaz.
+// Shared ElevenLabs module: TTS with timestamps, voice settings, subscription/credit measurement, spend log.
+// Adapted (source: kaynak-eleven.mjs). Differences: the root is this project; spend goes to `ses/harcama.jsonl`; default model
+// `eleven_v4_turbo`; if NO voice settings are given, the voice's own defaults (`GET /v1/voices/<id>/settings`) are sent as they are;
+// `speed` is never sent.
+// The key is read only from .env › ELEVENLABS_API_KEY; it is never written to any output, log or error message.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -23,10 +23,10 @@ export const anahtarVar = () => KEY().length > 0;
 export const HARCAMA = path.join(ROOT, 'ses', 'harcama.jsonl');
 export const MODEL = KANAL.ses?.model || 'eleven_v4_turbo';
 import { KANAL } from '../ayar.mjs';
-export const SES_KIMLIGI = KANAL.ses?.kimlik || '';   // kanal.json › ses.kimlik (ElevenLabs ses kimliği)
+export const SES_KIMLIGI = KANAL.ses?.kimlik || '';   // kanal.json › ses.kimlik (ElevenLabs voice ID)
 
 export async function el(method, p, { query = null, body = null } = {}) {
-  if (!anahtarVar()) throw new Error('ELEVENLABS_API_KEY boş (.env).');
+  if (!anahtarVar()) throw new Error('ELEVENLABS_API_KEY is empty (.env).');
   const url = new URL(API + p);
   if (query) for (const [k, v] of Object.entries(query)) if (v != null) url.searchParams.set(k, String(v));
   const r = await fetch(url, { method, headers: { 'xi-api-key': KEY(), ...(body ? { 'Content-Type': 'application/json' } : {}) }, body: body ? JSON.stringify(body) : undefined });
@@ -40,8 +40,9 @@ export async function abonelik() {
   return { kullanilan: json.character_count, limit: json.character_limit, kalan: json.character_limit - json.character_count, tier: json.tier, sifirlanma: json.next_character_count_reset_unix };
 }
 export async function sesAyari(sesId) {
+  if (!sesId) throw new Error('No voice ID: set kanal.json › ses.kimlik (an ElevenLabs voice ID) first.');
   const { json } = await el('GET', `/v1/voices/${encodeURIComponent(sesId)}/settings`);
-  const { speed, ...ayar } = json || {};   // speed gönderilmez
+  const { speed, ...ayar } = json || {};   // speed is not sent
   return ayar;
 }
 
@@ -50,7 +51,7 @@ export function harcamaYaz(kayit) {
   fs.appendFileSync(HARCAMA, JSON.stringify({ t: new Date().toISOString(), ...kayit }) + '\n');
 }
 
-// alignment (karakter zamanları) → kelimeler [{ w, t0, t1 }]; boşluk kelime ayırır, noktalama kelimeye yapışık kalır
+// alignment (character times) → words [{ w, t0, t1 }]; whitespace separates words, punctuation stays attached to the word
 export function kelimelereAyir(al) {
   const ch = al?.characters || [], s = al?.character_start_times_seconds || [], e = al?.character_end_times_seconds || [];
   const out = []; let w = '', t0 = null, t1 = null;
@@ -62,9 +63,10 @@ export function kelimelereAyir(al) {
   return out;
 }
 
-// Zaman damgalı TTS: mp3 + ham hizalama yazar, kelimeleri döndürür, harcamayı loglar (abonelik farkıyla ölçülen kredi)
+// TTS with timestamps: writes the mp3 + raw alignment, returns the words, logs the spend (credit measured as the subscription difference)
 export async function tts({ sesId = SES_KIMLIGI, metin, model = MODEL, ayar, seed = 42, cikti, is = 'tts', not = null }) {
-  let once = null; try { once = await abonelik(); } catch { /* ölçüm opsiyonel */ }
+  if (!sesId) throw new Error('No voice ID: set kanal.json › ses.kimlik (an ElevenLabs voice ID) first.');
+  let once = null; try { once = await abonelik(); } catch { /* measurement is optional */ }
   const body = { text: metin, model_id: model, seed };
   if (ayar) body.voice_settings = ayar;
   const { json, istekId } = await el('POST', `/v1/text-to-speech/${encodeURIComponent(sesId)}/with-timestamps`, { query: { output_format: 'mp3_44100_128' }, body });
@@ -78,9 +80,9 @@ export async function tts({ sesId = SES_KIMLIGI, metin, model = MODEL, ayar, see
   return { kelimeler, sure: kelimeler.length ? kelimeler[kelimeler.length - 1].t1 : null, kalan: sonra?.kalan ?? null, kredi: once && sonra ? sonra.kullanilan - once.kullanilan : null };
 }
 
-// multipart istek (konuşmadan metne: dosya yükleme). Hata mesajında anahtar yazılmaz.
+// multipart request (speech to text: file upload). The key is never written in an error message.
 export async function elForm(p, alanlar, { query = null } = {}) {
-  if (!anahtarVar()) throw new Error('ELEVENLABS_API_KEY boş (.env).');
+  if (!anahtarVar()) throw new Error('ELEVENLABS_API_KEY is empty (.env).');
   const url = new URL(API + p);
   if (query) for (const [k, v] of Object.entries(query)) if (v != null) url.searchParams.set(k, String(v));
   const fd = new FormData();

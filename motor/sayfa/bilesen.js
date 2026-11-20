@@ -1,17 +1,17 @@
-// Bileşen kitaplığı (16:9 ve 9:16 ortak). Her bileşen iki parçadır: (1) DOM/SVG kurulumu (başta görünmez),
-// (2) zaman çizelgesine eklenen giriş/çıkış/dönüşüm. Bütün tween'ler mutlak zamanda (sn) ve fromTo ile yazılır ki
-// rastgele seek aynı kareyi versin. Stil kartı (taslak 19 Kas 14:06): girişler silme/çizme ile, solma yalnız çıkışta;
-// çizgi 3 px, vurgu 5 px amber; köşe 6 px; tek vurgu rengi; oklar SVG ile (mono fontta "→" yok).
-// Kitaplık: yazi · kutu · cip · svgK/yol/ok (çizgi) · izgara (piksel ızgarası) · sayac/hesap (sayı hesabı) · vektor
-// (vektör kutusu) · egri (saçılım + eğri) · zincir (sistem zinciri) · bolumKarti · olcuCizgisi · dalga.
-import { KANAL, M } from './kimlik.js';
-// renkler kanal.json › renkler'den (varsayılan nötr)
+// Component library (shared by 16:9 and 9:16). Each component has two parts: (1) DOM/SVG setup (initially invisible),
+// (2) the entrance/exit/transformation added to the timeline. All tweens are written in absolute time (s) with fromTo so that
+// a random seek gives the same frame. Style card (draft of 19 Nov 14:06): entrances by wipe/draw, fading only on exit;
+// line 3 px, accent 5 px amber; corner 6 px; a single accent colour; arrows as SVG (the mono font has no "→").
+// Library: yazi (text) · kutu (box) · cip (chip) · svgK/yol/ok (line) · izgara (pixel grid) · sayac/hesap (number calculation) · vektor
+// (vector box) · egri (scatter + curve) · zincir (system chain) · bolumKarti (chapter card) · olcuCizgisi (dimension line) · dalga (wave).
+import { KANAL, M, BUYUK } from './kimlik.js';
+// colours from kanal.json › renkler (neutral defaults)
 export const R = { zemin: '#111214', yuzey: '#1A1C20', cizgi: '#2C2F36', ik: '#9A9EA6', metin: '#EEEEEE', vu: '#4C9AFF', ...(KANAL.renkler || {}) };
 const NS = 'http://www.w3.org/2000/svg';
 
 export function katman(par, ad) { const d = document.createElement('div'); d.className = 'kat'; if (ad) d.dataset.ad = ad; par.appendChild(d); gsap.set(d, { autoAlpha: 1 }); return d; }
 
-// ---- yazı ----
+// ---- text ----
 export function yazi(par, txt, { x, y, boy = 48, ag = 700, sayi = false, renk = 'metin', hiza = 'sol', dikey = 'ust', lang, ls, sinif = '' } = {}) {
   const e = document.createElement('div');
   e.className = `y ${sayi ? 'sayi' : ''} ${renk === 'ik' ? 'ik' : renk === 'vu' ? 'vu' : ''} ${sinif}`;
@@ -26,7 +26,7 @@ export function yazi(par, txt, { x, y, boy = 48, ag = 700, sayi = false, renk = 
   return e;
 }
 
-// giriş: 'sil' (soldan sağa silme), 'olcek' (yerinde büyüme), 'yukari' (alttan kayma + silme)
+// entrance: 'sil' (left-to-right wipe), 'olcek' (grow in place), 'yukari' (slide up from below + wipe)
 export function ac(tl, e, t, { d = 0.5, tur = 'sil', ease } = {}) {
   const els = Array.isArray(e) ? e : [e];
   for (const el of els) {
@@ -44,7 +44,7 @@ export function ac(tl, e, t, { d = 0.5, tur = 'sil', ease } = {}) {
 export function kapa(tl, e, t, d = 0.35) { tl.to(e, { autoAlpha: 0, duration: d, ease: 'power1.in' }, t); return tl; }
 export function tasi(tl, e, t, props, d = 0.6, ease = 'power3.inOut') { tl.to(e, { ...props, duration: d, ease }, t); return tl; }
 
-// vurgu: div (kenar + yazı) ya da SVG (çizgi/dolgu) amber'e geçer; sondur eski hâline
+// highlight: a div (border + text) or an SVG (line/fill) turns amber; sondur restores the old state
 export function vurgula(tl, e, t, d = 0.3) {
   for (const el of Array.isArray(e) ? e : [e]) {
     if (el instanceof SVGElement) { const dolgu = el.tagName === 'rect' && el.dataset.dolgu; tl.to(el, dolgu ? { attr: { fill: R.vu }, duration: d } : { stroke: R.vu, duration: d }, t); }
@@ -62,7 +62,7 @@ export function sondur(tl, e, t, d = 0.3, renk = R.ik) {
   return tl;
 }
 
-// ---- kutu ve çip ----
+// ---- box and chip ----
 export function kutu(par, { x, y, w, h, et = '', boy = 40, bos = false, hiza = 'orta', ag = 700 } = {}) {
   const e = document.createElement('div'); e.className = 'kutu' + (bos ? ' bos' : '');
   Object.assign(e.style, { left: x + 'px', top: y + 'px', width: w + 'px', height: h + 'px' });
@@ -79,14 +79,14 @@ export function cip(par, txt, { x, y, boy = 40, hiza = 'orta', sayi = false } = 
   return e;
 }
 
-// ---- çizgi ----
+// ---- line ----
 export function svgK(par) { const s = document.createElementNS(NS, 'svg'); s.setAttribute('class', 'k'); s.setAttribute('width', 1920); s.setAttribute('height', 1080); s.setAttribute('viewBox', '0 0 1920 1080'); par.appendChild(s); return s; }
 export function sv(par, tag, attrs = {}) { const e = document.createElementNS(NS, tag); for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v); par.appendChild(e); return e; }
 export function yol(svg, d, cls = 'c') { const p = sv(svg, 'path', { d, class: cls }); gsap.set(p, { drawSVG: '0%' }); return p; }
 export function ciz(tl, p, t, d = 0.5, ease = 'power2.out') { for (const el of Array.isArray(p) ? p : [p]) tl.fromTo(el, { drawSVG: '0%' }, { drawSVG: '100%', duration: d, ease }, t); return tl; }
-// silinen çizgi sonunda gizlenir: drawSVG '100% 100%' yuvarlak uçlu çizgide nokta bırakıyordu
+// an erased line is hidden at the end: drawSVG '100% 100%' left a dot on a round-capped line
 export function sil(tl, p, t, d = 0.4) { for (const el of Array.isArray(p) ? p : [p]) { tl.to(el, { drawSVG: '100% 100%', duration: d, ease: 'power2.in' }, t); tl.set(el, { autoAlpha: 0 }, t + d); } return tl; }
-// açık "V" uçlu ok (14 px uç, stil kartı §4)
+// arrow with an open "V" head (14 px tip, style card §4)
 export function ok(svg, x1, y1, x2, y2, cls = 'c') {
   const a = Math.atan2(y2 - y1, x2 - x1), u = 16, ac = 0.5;
   const govde = yol(svg, `M${x1},${y1} L${x2},${y2}`, cls);
@@ -94,7 +94,7 @@ export function ok(svg, x1, y1, x2, y2, cls = 'c') {
   return { govde, uc, ikisi: [govde, uc] };
 }
 export function okCiz(tl, o, t, d = 0.45) { ciz(tl, o.govde, t, d); ciz(tl, o.uc, t + d * 0.85, 0.15); return tl; }
-// ölçü çizgisi: iki uçta 12 px çentik, ortada mono değer
+// dimension line: 12 px ticks at both ends, a mono value in the middle
 export function olcuCizgisi(svg, x1, y1, x2, y2, deger, { yon = 'ust' } = {}) {
   const g = sv(svg, 'g'); const dik = Math.abs(y2 - y1) > Math.abs(x2 - x1);
   const c = dik ? `M${x1 - 6},${y1} L${x1 + 6},${y1} M${x2 - 6},${y2} L${x2 + 6},${y2}` : `M${x1},${y1 - 6} L${x1},${y1 + 6} M${x2},${y2 - 6} L${x2},${y2 + 6}`;
@@ -105,7 +105,7 @@ export function olcuCizgisi(svg, x1, y1, x2, y2, deger, { yon = 'ust' } = {}) {
 }
 export function olcuAc(tl, o, t) { ciz(tl, o.cizgiler, t, 0.45); tl.fromTo(o.yazi, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.25 }, t + 0.3); return tl; }
 
-// ---- piksel ızgarası ----
+// ---- pixel grid ----
 export function izgara(par, { x, y, sut, sat, k = 24, ara = 6, renk = R.cizgi } = {}) {
   const svg = svgK(par), g = sv(svg, 'g'), kareler = [];
   for (let r = 0; r < sat; r++) for (let c = 0; c < sut; c++) {
@@ -114,20 +114,20 @@ export function izgara(par, { x, y, sut, sat, k = 24, ara = 6, renk = R.cizgi } 
   }
   return { svg, g, kareler, k, ara, x, y, sut, sat, gen: sut * (k + ara) - ara, yuk: sat * (k + ara) - ara, merkez: (i) => ({ cx: x + (i % sut) * (k + ara) + k / 2, cy: y + Math.floor(i / sut) * (k + ara) + k / 2 }) };
 }
-// dalga hâlinde (sol üstten çapraz) belirme
+// appears as a wave (diagonally from the top left)
 export function izgaraAc(tl, z, t, d = 1.2) {
   tl.fromTo(z.kareler, { autoAlpha: 0, scale: 0.2 }, { autoAlpha: 1, scale: 1, duration: 0.35, ease: 'back.out(2)', stagger: { each: d / (z.sut + z.sat), grid: [z.sat, z.sut], from: 'start', axis: null } }, t);
   return tl;
 }
 
-// ---- sayı hesabı ----
-// sayac: yazının içindeki sayıyı a'dan b'ye döndürür (mono, tabular). Ön/son ek ayrı span değil: bicim(v) ile.
-// Sayaçlar zaman çizelgesine değil, render(t) içinde doğrudan t'den hesaplanır (seek'te geri çağrı gerekmez, deterministik).
+// ---- number calculation ----
+// sayac: runs the number inside the text from a to b (mono, tabular). Prefix/suffix is not a separate span: use bicim(v).
+// Counters are not on the timeline; they are computed directly from t inside render(t) (no callback needed on seek, deterministic).
 export const SAYACLAR = [];
 export function sayac(tl, e, t, a, b, d = 0.6, bicim = (v) => String(Math.round(v))) { SAYACLAR.push({ e, t, a, b, d, bicim }); return tl; }
 const io = (u) => (u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2);
-// Sürekli dönüşüm: GUNCELLE'ye eklenen fn(t) her karede render(t) içinde çağrılır; değerler t'den hesaplanır.
-// parca(t, [[t0, v0], [t1, v1], …]) parça parça yumuşak geçiş (smoothstep), uçlarda sabit.
+// Continuous transformation: an fn(t) added to GUNCELLE is called in render(t) on every frame; values are computed from t.
+// parca(t, [[t0, v0], [t1, v1], …]) is a piecewise smooth transition (smoothstep), constant at the ends.
 export const GUNCELLE = [];
 export const guncelle = (fn) => GUNCELLE.push(fn);
 export function parca(t, noktalar) {
@@ -137,7 +137,7 @@ export function parca(t, noktalar) {
 }
 export function sayacGuncelle(t) {
   for (const fn of GUNCELLE) fn(t);
-  const son = new Map();                                   // aynı öğede: başlamış en son sayaç; hiçbiri başlamadıysa en erken olanı
+  const son = new Map();                                   // for the same element: the latest counter that has started; if none has started, the earliest one
   for (const s of SAYACLAR) {
     const o = son.get(s.e);
     if (!o) { son.set(s.e, s); continue; }
@@ -146,7 +146,7 @@ export function sayacGuncelle(t) {
   }
   for (const [e, s] of son) { const u = Math.min(1, Math.max(0, (t - s.t) / s.d)); e.textContent = s.bicim(s.a + (s.b - s.a) * io(u)); }
 }
-// hesap satırı: parçalar sırayla belirir ("990", "÷", "1000", "=", "%99"); her parça kendi kelime anında
+// calculation row: the parts appear in order ("990", "÷", "1000", "=", "%99"); each part at its own word moment
 export function hesap(par, parcalar, { x, y, boy = 72, ara = 28, hiza = 'sol' } = {}) {
   const els = []; let cx = x;
   const kap = document.createElement('div'); kap.style.position = 'absolute'; kap.style.left = x + 'px'; kap.style.top = y + 'px';
@@ -160,7 +160,7 @@ export function hesap(par, parcalar, { x, y, boy = 72, ara = 28, hiza = 'sol' } 
   return { kap, els };
 }
 
-// ---- vektör kutusu: köşeli parantez içinde satırlar (etiket + değer yuvası) ----
+// ---- vector box: rows inside square brackets (label + value slot) ----
 export function vektor(par, { x, y, etiketler, satir = 64, gen = 380, boy = 32 } = {}) {
   const svg = svgK(par), h = etiketler.length * satir + 24;
   const sol = yol(svg, `M${x + 18},${y} L${x},${y} L${x},${y + h} L${x + 18},${y + h}`, 'c m');
@@ -170,7 +170,7 @@ export function vektor(par, { x, y, etiketler, satir = 64, gen = 380, boy = 32 }
 }
 export function vektorAc(tl, v, t) { ciz(tl, [v.sol, v.sag], t, 0.4); return tl; }
 
-// ---- eğri: saçılım noktaları + uydurulmuş çizgi (yalnız şekil; eksen sayısı yok) ----
+// ---- curve: scatter points + a fitted line (shape only; no axis numbers) ----
 export function egri(par, { x, y, w, h, noktalar, egriD } = {}) {
   const svg = svgK(par);
   const eks = yol(svg, `M${x},${y} L${x},${y + h} L${x + w},${y + h}`, 'c ince');
@@ -179,7 +179,7 @@ export function egri(par, { x, y, w, h, noktalar, egriD } = {}) {
   return { svg, eks, nk, cizgi };
 }
 
-// ---- sistem zinciri: kutular + oklar ----
+// ---- system chain: boxes + arrows ----
 export function zincir(par, adlar, { x, y, w = 240, h = 110, ara = 90, boy = 34 } = {}) {
   const svg = svgK(par), kutular = [], oklar = [];
   adlar.forEach((ad, i) => {
@@ -194,15 +194,15 @@ export function zincirAc(tl, z, t, aralik = 0.25) {
   return tl;
 }
 
-// ---- bölüm kartı (1,5 sn; YouTube bölüm adıyla aynı) ----
-// Yönetici kararı 19 Kas: ders numarası biçimi (büyük amber "01") burada KULLANILMAZ; küçük Mono "BÖLÜM N" künyesi + ad.
+// ---- chapter card (1.5 s; same as the YouTube chapter name) ----
+// Manager decision 19 Nov: the lesson-number style (large amber "01") is NOT used here; a small Mono "CHAPTER N" tag + the title.
 export function bolumKarti(par, { no, baslik, ders = 1, seri = KANAL.seri }) {
-  const k = katman(par, 'kart'); k.style.background = 'var(--zemin)'; gsap.set(k, { autoAlpha: 0 });   // tam zemin: alttaki sahnenin sönüşünü örter
+  const k = katman(par, 'kart'); k.style.background = 'var(--zemin)'; gsap.set(k, { autoAlpha: 0 });   // full background: covers the fade-out of the scene underneath
   const svg = svgK(k);
   const ust = yol(svg, 'M96,470 L1824,470', 'c ince');
   const cent = yol(svg, 'M96,440 L96,470', 'c v');
-  const n = yazi(k, no ? `${M('bolum', 'BÖLÜM')} ${no}` : M('kapanis', 'KAPANIŞ'), { x: 116, y: 430, boy: 28, ag: 600, sayi: true, ls: 0.08 });
-  const ser = yazi(k, `${seri} · ${M('ders', 'Ders')} ${ders}`.toLocaleUpperCase('tr'), { x: 1824, y: 434, boy: 22, ag: 600, sayi: true, renk: 'ik', ls: 0.08, hiza: 'sag' });
+  const n = yazi(k, no ? `${M('chapter')} ${no}` : M('closing'), { x: 116, y: 430, boy: 28, ag: 600, sayi: true, ls: 0.08 });
+  const ser = yazi(k, BUYUK(`${seri} · ${M('episode')} ${ders}`), { x: 1824, y: 434, boy: 22, ag: 600, sayi: true, renk: 'ik', ls: 0.08, hiza: 'sag' });
   const b = yazi(k, baslik, { x: 96, y: 506, boy: 112, ag: 800 });
   return { k, ust, cent, ser, n, b };
 }
@@ -214,15 +214,15 @@ export function kartGoster(tl, kart, t0, t1) {
   return tl;
 }
 
-// ---- ses dalgası (sinüs toplamı; anlamı "dinleyerek") ----
+// ---- sound wave (sum of sines; meaning: "by listening") ----
 export function dalgaD(x, y, w, gen = 60, n = 6) {
   let d = `M${x},${y}`;
   for (let i = 0; i <= 240; i++) { const u = i / 240, zarf = Math.sin(Math.PI * u); const v = zarf * gen * (0.6 * Math.sin(u * n * 2 * Math.PI) + 0.4 * Math.sin(u * n * 5.3 * Math.PI)); d += ` L${(x + u * w).toFixed(1)},${(y + v).toFixed(1)}`; }
   return d;
 }
 
-// ======================= VİDEO KİMLİĞİ BİLEŞENLERİ (yonetim/VIDEO-KIMLIGI.md; her videoda birebir aynı) =======================
-// Açılış geçişi (iskelet 2): kancadan sonra 1 sn; amber çentik yukarıdan seri şeridine iner, şerit çizilir. Logo yok.
+// ======================= VIDEO IDENTITY COMPONENTS (yonetim/VIDEO-KIMLIGI.md; identical in every video) =======================
+// Opening transition (skeleton 2): 1 s after the hook; an amber notch drops from the top onto the series strip, and the strip is drawn. No logo.
 export function acilisGecis(tl, par, t0, sure = 1.0) {
   const k = katman(par, 'acilis-gecis'), s = svgK(k);
   const cent = sv(s, 'line', { x1: 96, y1: 306, x2: 96, y2: 330, stroke: R.vu, 'stroke-width': 5, 'stroke-linecap': 'round' }); gsap.set(cent, { autoAlpha: 0 });
@@ -232,7 +232,7 @@ export function acilisGecis(tl, par, t0, sure = 1.0) {
   ciz(tl, serit, t0 + sure * 0.5, sure * 0.5, 'power2.inOut');
   return { k, cent, serit };
 }
-// Ders künyesi (iskelet 3): seri şeridi, büyük amber ders numarası, ders adı, alt soru. Çentik ve şerit açılış geçişinden devralınır.
+// Lesson tag (skeleton 3): series strip, large amber lesson number, lesson title, sub-question. The notch and strip carry over from the opening transition.
 export function dersKunyesi(par, { no, ad, soru, seri = KANAL.seri }) {
   const k = katman(par, 'ders-kunyesi');
   const ser = yazi(k, seri, { x: 116, y: 288, boy: 30, ag: 600, renk: 'ik', ls: 0.04 });
@@ -246,16 +246,16 @@ export function dersKunyesiGoster(tl, d, t0, { soruT, son, gecis } = {}) {
   if (son != null) { tl.to(d.k, { y: -120, autoAlpha: 0, duration: 0.5, ease: 'power2.in' }, son); if (gecis) tl.to(gecis.k, { y: -120, autoAlpha: 0, duration: 0.5, ease: 'power2.in' }, son); }
   return tl;
 }
-// Kapanış (iskelet 7): 20 sn; logo (dosyadan okunur, yeni logo gelince yalnız bu sahne yeniden render edilir) + "Sonraki ders" kartı.
-// Sol (96–620) ve sağ (1300–1824) alanlar YouTube son ekran öğeleri için boş bırakılır.
+// Closing (skeleton 7): 20 s; logo (read from a file; when a new logo arrives only this scene is re-rendered) + a "Next lesson" card.
+// The left (96–620) and right (1300–1824) areas are left empty for the YouTube end-screen elements.
 export function kapanisEkrani(par, { sonrakiNo, sonrakiAd, seri = KANAL.seri, logo = KANAL.logo }) {
   const k = katman(par, 'kapanis'); gsap.set(k, { autoAlpha: 0 });
   const img = document.createElement('img'); img.src = logo; Object.assign(img.style, { position: 'absolute', left: '840px', top: '150px', width: '240px', height: '240px' }); k.appendChild(img); gsap.set(img, { autoAlpha: 0 });
   const s = svgK(k); const cz = yol(s, 'M700,450 L1220,450', 'c ince'), cent = yol(s, 'M700,426 L700,450', 'c v');
-  const sk = yazi(k, `Sonraki ders · Ders ${sonrakiNo}`.toLocaleUpperCase('tr'), { x: 720, y: 412, boy: 24, ag: 600, sayi: true, renk: 'ik', ls: 0.08 });
+  const sk = yazi(k, BUYUK(`${M('next')} · ${M('episode')} ${sonrakiNo}`), { x: 720, y: 412, boy: 24, ag: 600, sayi: true, renk: 'ik', ls: 0.08 });
   const satir = Array.isArray(sonrakiAd) ? sonrakiAd : [sonrakiAd];
   const ad = satir.map((t, i) => yazi(k, t, { x: 960, y: 486 + i * 74, boy: 60, ag: 800, hiza: 'orta' }));
-  const sr = yazi(k, seri.toLocaleUpperCase('tr'), { x: 960, y: 486 + satir.length * 74 + 30, boy: 24, ag: 600, sayi: true, renk: 'ik', ls: 0.08, hiza: 'orta' });
+  const sr = yazi(k, BUYUK(seri), { x: 960, y: 486 + satir.length * 74 + 30, boy: 24, ag: 600, sayi: true, renk: 'ik', ls: 0.08, hiza: 'orta' });
   return { k, img, cz, cent, sk, ad, sr };
 }
 export function kapanisGoster(tl, c, t0, t1) {

@@ -1,6 +1,6 @@
-// İngilizce altyazı: Türkçe altyazi.srt'nin parça sayısı ve zaman damgaları aynen, metin <proje>/ceviri-en.json'dan.
-// Her parça ≤ 2 satır × ≤ 42 karakter (kelime sınırında en dengeli bölüm). Sonda betik doğrulaması.
-//   node kalite/altyazi_en.mjs <proje>
+// English subtitles: same cue count and timestamps as the Turkish altyazi.srt, text taken from <project>/ceviri-en.json.
+// Each cue <= 2 lines x <= 42 characters (most balanced split on a word boundary). Script verification at the end.
+//   node kalite/altyazi_en.mjs <project>
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -14,7 +14,7 @@ const oku = (f) => fs.readFileSync(f, 'utf8').replace(/^﻿/, '').replace(/\r/g,
 });
 const tr = oku(path.join(DIR, 'paket', 'altyazi.srt'));
 const en = JSON.parse(fs.readFileSync(path.join(DIR, 'ceviri-en.json'), 'utf8'));
-if (en.length !== tr.length) throw new Error(`parça sayısı farklı: TR ${tr.length}, EN ${en.length}`);
+if (en.length !== tr.length) throw new Error(`cue count differs: TR ${tr.length}, EN ${en.length}`);
 
 const bol2 = (m) => {
   if (m.length <= SATIR) return [m];
@@ -28,25 +28,25 @@ const bol2 = (m) => {
 const hatalar = [];
 const cikti = tr.map((c, i) => {
   const m = en[i].trim();
-  if (!m) hatalar.push(`${c.no}: boş`);
+  if (!m) hatalar.push(`${c.no}: empty`);
   const s = bol2(m);
-  if (!s) { hatalar.push(`${c.no}: ${m.length} karakter, 2×${SATIR} satıra sığmıyor: ${m}`); return null; }
+  if (!s) { hatalar.push(`${c.no}: ${m.length} characters, does not fit in 2x${SATIR} lines: ${m}`); return null; }
   return `${c.no}\n${c.zaman}\n${s.join('\n')}\n`;
 });
 if (hatalar.length) { console.error(hatalar.join('\n')); process.exit(1); }
 const OUT = path.join(DIR, 'paket', 'altyazi-en.srt');
 fs.writeFileSync(OUT, cikti.join('\n'), 'utf8');
 
-// doğrulama: yazılan dosyayı yeniden oku, TR ile parça parça karşılaştır
+// verification: re-read the written file and compare cue by cue with TR
 const geri = oku(OUT);
-if (geri.length !== tr.length) throw new Error('doğrulama: parça sayısı tutmuyor');
+if (geri.length !== tr.length) throw new Error('verification: cue count mismatch');
 let enUzun = 0;
 geri.forEach((g, i) => {
-  if (g.no !== tr[i].no) throw new Error(`doğrulama: sıra no ${g.no} ≠ ${tr[i].no}`);
-  if (g.zaman !== tr[i].zaman) throw new Error(`doğrulama: zaman ${g.no}: ${g.zaman} ≠ ${tr[i].zaman}`);
-  if (g.metin.length < 1 || g.metin.length > 2) throw new Error(`doğrulama: ${g.no} satır sayısı ${g.metin.length}`);
-  for (const s of g.metin) { if (s.length > SATIR) throw new Error(`doğrulama: ${g.no} satır ${s.length} karakter`); enUzun = Math.max(enUzun, s.length); }
-  if (g.metin.join(' ') !== en[i].trim()) throw new Error(`doğrulama: ${g.no} metin bozuldu`);
+  if (g.no !== tr[i].no) throw new Error(`verification: sequence no ${g.no} ≠ ${tr[i].no}`);
+  if (g.zaman !== tr[i].zaman) throw new Error(`verification: timing ${g.no}: ${g.zaman} ≠ ${tr[i].zaman}`);
+  if (g.metin.length < 1 || g.metin.length > 2) throw new Error(`verification: ${g.no} line count ${g.metin.length}`);
+  for (const s of g.metin) { if (s.length > SATIR) throw new Error(`verification: ${g.no} line is ${s.length} characters`); enUzun = Math.max(enUzun, s.length); }
+  if (g.metin.join(' ') !== en[i].trim()) throw new Error(`verification: ${g.no} text was altered`);
 });
-if (/[ğüşıöçĞÜŞİÖÇ]/.test(geri.map((g) => g.metin.join(' ')).join(' '))) throw new Error('doğrulama: İngilizce metinde Türkçe harf kaldı');
-console.log(`altyazi-en.srt: ${geri.length} parça (TR ${tr.length}), ${geri.length} zaman damgası birebir aynı, en uzun satır ${enUzun} karakter`);
+if (/[ğüşıöçĞÜŞİÖÇ]/.test(geri.map((g) => g.metin.join(' ')).join(' '))) throw new Error('verification: Turkish letters remain in the English text');
+console.log(`altyazi-en.srt: ${geri.length} cues (TR ${tr.length}), ${geri.length} timestamps identical, longest line ${enUzun} characters`);

@@ -1,19 +1,19 @@
-# Video kimliği
+# Video identity
 
-Her videoda aynı kalan kurallar. Kurulumda doldurulur; değişiklik karar günlüğüne yazılır.
+Rules that stay the same in every video. Filled in during setup; changes are written to the decision log.
 
-## 1. Her videoda aynı kalan iskelet
+## 1. The skeleton that stays the same in every video
 
-## 2. Görsel dil
+## 2. Visual language
 
-## 3. Ses
+## 3. Audio
 
-## 4. Metin
+## 4. Text
 
-## 5. Paket (her video aynı biçimde)
+## 5. Package (same format for every video)
 
-## 6. Her video için kalite kapısı
+## 6. Quality gate for every video
 
-## 7. Serbest olanlar
+## 7. What is free to vary
 
-## 8. Değişiklik kaydı
+## 8. Change log

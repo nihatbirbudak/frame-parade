@@ -1,1 +1,1 @@
-Kurulum denemesi: video kiti ile üretilen 10 saniyelik sessiz Shorts.
+Setup test: a 10-second silent Short made with frame-parade.

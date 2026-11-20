@@ -1,6 +1,6 @@
-// Belirli anların karesini PNG olarak alır (göz kontrolü, storyboard, öz-denetim).
-//   node motor/kare.mjs <proje> <parça> <çıkış klasörü> [t1 t2 …] [--olaylar] [--her 2.5] [--olcek 0.5]
-//   --olaylar: her olay anından 0,7 sn sonrasını alır (dönüşümden sonraki durum); --her N: N sn aralıkla
+// Captures the frame at given moments as PNG (visual check, storyboard, self-review).
+//   node motor/kare.mjs <project> <part> <output folder> [t1 t2 …] [--olaylar] [--her 2.5] [--olcek 0.5]
+//   --olaylar: takes the frame 0.7 s after each event (the state after the transformation); --her N: every N seconds
 import fs from 'node:fs';
 import path from 'node:path';
 import { ac } from '../motor/lib.mjs';
@@ -26,5 +26,5 @@ for (const t of anlar) {
     fs.writeFileSync(ad, Buffer.from(b64, 'base64'));
   } else await page.screenshot({ path: ad, type: 'png' });
 }
-console.log(`${anlar.length} kare → ${CIK} (${((Date.now() - t0) / 1000).toFixed(1)} sn); süre ${info.sure} sn, ${info.olaylar.length} olay`);
+console.log(`${anlar.length} frames → ${CIK} (${((Date.now() - t0) / 1000).toFixed(1)} s); duration ${info.sure} s, ${info.olaylar.length} events`);
 await kapat();

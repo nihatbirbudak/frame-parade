@@ -1,6 +1,6 @@
-// YouTube API ortak yardımcıları (bağımlılıksız).
-// Gizli bilgiler: istemci `client_secret.json`, yenileme jetonu `.env` › YOUTUBE_REFRESH_TOKEN.
-// Hiçbir fonksiyon jeton ya da gizli anahtarı ekrana yazmaz.
+// Shared YouTube API helpers (no dependencies).
+// Secrets: the client is `client_secret.json`, the refresh token is `.env` › YOUTUBE_REFRESH_TOKEN.
+// No function prints a token or secret key to the screen.
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
@@ -14,6 +14,11 @@ export const KAPSAMLAR = [
   'https://www.googleapis.com/auth/youtube.upload',
   'https://www.googleapis.com/auth/youtube',
   'https://www.googleapis.com/auth/youtube.force-ssl',
+  'https://www.googleapis.com/auth/yt-analytics.readonly',
+];
+// Read-only scopes (node youtube/yetki.mjs --yalniz-okuma): statistics and comments, no upload or edit rights.
+export const OKUMA_KAPSAMLARI = [
+  'https://www.googleapis.com/auth/youtube.readonly',
   'https://www.googleapis.com/auth/yt-analytics.readonly',
 ];
 
@@ -45,7 +50,7 @@ let onbellek = null;
 export async function erisimJetonu() {
   if (onbellek && onbellek.bitis > Date.now() + 60_000) return onbellek.jeton;
   const yenileme = envOku().YOUTUBE_REFRESH_TOKEN;
-  if (!yenileme) throw new Error('YOUTUBE_REFRESH_TOKEN yok: önce `node youtube/yetki.mjs` çalıştırılmalı.');
+  if (!yenileme) throw new Error('YOUTUBE_REFRESH_TOKEN missing: run `node youtube/yetki.mjs` first.');
   const { id, gizli, tokenUri } = istemci();
   const r = await fetch(tokenUri, {
     method: 'POST',
@@ -53,7 +58,7 @@ export async function erisimJetonu() {
     body: new URLSearchParams({ client_id: id, client_secret: gizli, refresh_token: yenileme, grant_type: 'refresh_token' }),
   });
   const j = await r.json();
-  if (!r.ok) throw new Error(`jeton yenilenemedi: ${j.error || r.status} ${j.error_description || ''}`);
+  if (!r.ok) throw new Error(`token refresh failed: ${j.error || r.status} ${j.error_description || ''}`);
   onbellek = { jeton: j.access_token, bitis: Date.now() + (j.expires_in || 3600) * 1000 };
   return onbellek.jeton;
 }

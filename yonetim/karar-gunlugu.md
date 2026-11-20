@@ -1,4 +1,4 @@
-# Karar günlüğü
+# Decision log
 
-Her karar: tarih, karar, gerekçe, kim verdi. Numara biçimi: K-001.
+Each decision: date, decision, rationale, who decided. Number format: K-001.
 

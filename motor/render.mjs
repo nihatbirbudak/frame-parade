@@ -1,7 +1,7 @@
-// Render: headless Chrome karesi → ffmpeg (libx264) + ses. Biçim projenin proje.json › bicim alanından (yatay / dikey), 30 fps.
-//   node motor/render.mjs <proje> [parça=tam] [--sub 2] [--crf 18] [--from 0 --to 300] [--olcek 0.5 (animatik)]
-// Çıktı: <projeler>/<proje>/cikti/<parça>.mp4 (+ .render.json). Ses: cikti/<parça>.wav; yoksa sessiz ses izi (deneme).
-// --sub N: kare başına N alt kare (180° obtüratör hareket bulanıklığı, tmix); 1 = bulanıklık yok.
+// Render: headless Chrome frames → ffmpeg (libx264) + audio. Format comes from the project's proje.json › bicim field (yatay = landscape / dikey = portrait), 30 fps.
+//   node motor/render.mjs <project> [part=tam] [--sub 2] [--crf 18] [--from 0 --to 300] [--olcek 0.5 (animatic)]
+// Output: <projeler>/<project>/cikti/<part>.mp4 (+ .render.json). Audio: cikti/<part>.wav; if missing, a silent audio track (test).
+// --sub N: N sub-frames per frame (180° shutter motion blur, tmix); 1 = no blur.
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
@@ -11,7 +11,7 @@ import { proje } from '../ayar.mjs';
 
 const arg = process.argv.slice(2);
 const [PROJE, PARCA = 'tam'] = arg.filter((a, i) => !a.startsWith('--') && !(i > 0 && arg[i - 1].startsWith('--')));
-if (!PROJE) { console.log('Kullanım: node motor/render.mjs <proje> [parça]'); process.exit(2); }
+if (!PROJE) { console.log('Usage: node motor/render.mjs <project> [part]'); process.exit(2); }
 const opt = (k, d) => (arg.includes(k) ? Number(arg[arg.indexOf(k) + 1]) : d);
 const SUB = opt('--sub', 1), CRF = opt('--crf', 18), OLCEK = opt('--olcek', 1);
 const DIR = path.join(proje(PROJE), 'cikti'); fs.mkdirSync(DIR, { recursive: true });
@@ -23,7 +23,7 @@ const { page, kapat, W, H } = await ac(`proje=${PROJE}&parca=${PARCA}`);
 const { sure, fps, olay } = await page.evaluate(() => ({ sure: window.VIDEO.sure, fps: window.VIDEO.fps, olay: window.VIDEO.olaylar.length }));
 const TOPLAM = Math.round(sure * fps);
 const F0 = opt('--from', 0), F1 = Math.min(opt('--to', TOPLAM), TOPLAM);
-log(`${PROJE}/${PARCA}: ${W}×${H}, ${sure} sn, ${TOPLAM} kare, ${olay} olay; render ${F0}–${F1}, sub ${SUB}, crf ${CRF}, ölçek ${OLCEK}${SESLI ? '' : ', SESSİZ (cikti/' + PARCA + '.wav yok)'}`);
+log(`${PROJE}/${PARCA}: ${W}×${H}, ${sure} s, ${TOPLAM} frames, ${olay} events; render ${F0}–${F1}, sub ${SUB}, crf ${CRF}, scale ${OLCEK}${SESLI ? '' : ', SILENT (no cikti/' + PARCA + '.wav)'}`);
 
 const SHUTTER = 0.5;
 const vf = [SUB > 1 ? `tmix=frames=${SUB}` : null, SUB > 1 ? `select='eq(mod(n\\,${SUB})\\,${SUB - 1})'` : null, `setpts=N/(${fps}*TB)`,
@@ -38,7 +38,7 @@ const ff = spawn(FFMPEG, ['-y', '-hide_banner', '-loglevel', 'warning',
   '-c:a', 'aac', '-b:a', '192k', '-ar', '48000', '-movflags', '+faststart', '-shortest', TMP], { stdio: ['pipe', 'inherit', 'pipe'] });
 let ffErr = ''; ff.stderr.on('data', (d) => { ffErr += d; if (ffErr.length > 20000) ffErr = ffErr.slice(-10000); });
 
-await page.evaluate((t) => window.VIDEO.render(t), F0 / fps); await page.screenshot({ type: 'png' });   // ısınma
+await page.evaluate((t) => window.VIDEO.render(t), F0 / fps); await page.screenshot({ type: 'png' });   // warm-up
 const t0 = Date.now();
 for (let f = F0; f < F1; f++) {
   for (let s = 0; s < SUB; s++) {
@@ -48,7 +48,7 @@ for (let f = F0; f < F1; f++) {
     if (!ff.stdin.write(buf)) await once(ff.stdin, 'drain');
   }
   const n = f + 1 - F0;
-  if (n % 300 === 0) { const el = (Date.now() - t0) / 1000; log(`kare ${f + 1}/${F1} · ${el.toFixed(0)} sn · ${(n / el).toFixed(1)} kare/sn · kalan ~${((F1 - f - 1) * el / n).toFixed(0)} sn`); }
+  if (n % 300 === 0) { const el = (Date.now() - t0) / 1000; log(`frame ${f + 1}/${F1} · ${el.toFixed(0)} s · ${(n / el).toFixed(1)} fps · remaining ~${((F1 - f - 1) * el / n).toFixed(0)} s`); }
 }
 ff.stdin.end();
 const [code] = await once(ff, 'close');
@@ -59,4 +59,4 @@ const sn = (Date.now() - t0) / 1000;
 const kayit = { proje: PROJE, parca: PARCA, dosya: path.basename(OUT), boyut: `${W}x${H}`, sesli: SESLI, kare: F1 - F0, video_sn: +((F1 - F0) / fps).toFixed(2), render_sn: +sn.toFixed(1),
   kare_sn: +((F1 - F0) / sn).toFixed(2), sub: SUB, crf: CRF, olcek: OLCEK, mb: +(fs.statSync(OUT).size / 1048576).toFixed(1), t: new Date().toISOString() };
 fs.writeFileSync(OUT.replace(/\.mp4$/, '.render.json'), JSON.stringify(kayit, null, 1));
-log(`bitti → ${OUT} (${kayit.mb} MB) · ${sn.toFixed(0)} sn · ${kayit.kare_sn} kare/sn`);
+log(`done → ${OUT} (${kayit.mb} MB) · ${sn.toFixed(0)} s · ${kayit.kare_sn} fps`);

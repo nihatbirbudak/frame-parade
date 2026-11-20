@@ -1,6 +1,6 @@
-// Okuma süresi ölçümü: sayfa 0,1 sn aralıkla örneklenir; her yazı öğesinin (.y, .cip, .kutu .et) tam görünür (opaklık
-// ≥ 0,9, kırpmasız, ekranda) kaldığı en uzun kesintisiz süre hesaplanır. Sonuç: en kısa süreler ve eşik (0,6 sn) altı.
-//   node motor/okuma_olc.mjs <proje> <parça> [baş sn] [son sn]
+// Reading-time measurement: the page is sampled every 0.1 s; for each text element (.y, .cip, .kutu .et) the longest
+// uninterrupted time it stays fully visible (opacity >= 0.9, unclipped, on screen) is computed. Result: the shortest durations and those under the 0.6 s threshold.
+//   node motor/okuma_olc.mjs <project> <part> [start s] [end s]
 import { ac } from '../motor/lib.mjs';
 const [PROJE, PARCA, A = 0, Bs] = process.argv.slice(2);
 const { page, kapat } = await ac(`proje=${PROJE}&parca=${PARCA}`);

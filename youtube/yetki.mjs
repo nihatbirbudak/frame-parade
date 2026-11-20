@@ -1,11 +1,13 @@
-// Bir kez çalıştırılır: Google izin sayfası için adres üretir, yerel geri dönüşü bekler,
-// yenileme jetonunu `.env` › YOUTUBE_REFRESH_TOKEN'a yazar. Jeton ekrana yazılmaz.
-// Kullanım: node youtube/yetki.mjs   (adres `youtube/yetki-adres.txt` dosyasına da yazılır)
+// Run once: generates the address for the Google consent page, waits for the local redirect,
+// writes the refresh token to `.env` › YOUTUBE_REFRESH_TOKEN. The token is not printed to the screen.
+// Usage: node youtube/yetki.mjs [--yalniz-okuma]   (--yalniz-okuma: read-only scopes for analytics only, no upload; the address is also written to `youtube/yetki-adres.txt`)
 import http from 'node:http';
 import { randomBytes, createHash } from 'node:crypto';
 import { writeFileSync, unlinkSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
-import { istemci, envYaz, KAPSAMLAR, KOK } from './api.mjs';
+import { istemci, envYaz, KAPSAMLAR as TUM_KAPSAMLAR, OKUMA_KAPSAMLARI, KOK } from './api.mjs';
+const KAPSAMLAR = process.argv.includes('--yalniz-okuma') ? OKUMA_KAPSAMLARI : TUM_KAPSAMLAR;
+console.log(process.argv.includes('--yalniz-okuma') ? 'Read-only authorisation: youtube.readonly + yt-analytics.readonly (uploading will not work with this token).' : 'Full authorisation: upload, edit and analytics.');
 
 const { id, gizli, tokenUri } = istemci();
 const dogrulayici = randomBytes(48).toString('base64url');
@@ -19,8 +21,8 @@ const sunucu = http.createServer(async (istek, cevap) => {
   const kod = u.searchParams.get('code');
   const hata = u.searchParams.get('error');
   if (hata || u.searchParams.get('state') !== durum || !kod) {
-    cevap.writeHead(400, { 'content-type': 'text/plain; charset=utf-8' }).end('İzin alınamadı: ' + (hata || 'durum uyuşmadı'));
-    console.log('HATA:', hata || 'durum uyuşmadı');
+    cevap.writeHead(400, { 'content-type': 'text/plain; charset=utf-8' }).end('Consent not granted: ' + (hata || 'state mismatch'));
+    console.log('ERROR:', hata || 'state mismatch');
     kapat(1);
     return;
   }
@@ -34,15 +36,15 @@ const sunucu = http.createServer(async (istek, cevap) => {
       }),
     });
     const j = await r.json();
-    if (!r.ok || !j.refresh_token) throw new Error(j.error_description || j.error || 'yenileme jetonu gelmedi');
+    if (!r.ok || !j.refresh_token) throw new Error(j.error_description || j.error || 'no refresh token was returned');
     envYaz('YOUTUBE_REFRESH_TOKEN', j.refresh_token);
     const verilen = (j.scope || '').split(' ').map(s => s.replace('https://www.googleapis.com/auth/', '')).join(', ');
-    cevap.writeHead(200, { 'content-type': 'text/plain; charset=utf-8' }).end('izin alındı. Bu sekmeyi kapatabilirsiniz.');
-    console.log('TAMAM: yenileme jetonu .env dosyasına yazıldı. Verilen kapsamlar:', verilen);
+    cevap.writeHead(200, { 'content-type': 'text/plain; charset=utf-8' }).end('Consent granted. You can close this tab.');
+    console.log('DONE: the refresh token was written to the .env file. Granted scopes:', verilen);
     kapat(0);
   } catch (e) {
-    cevap.writeHead(500, { 'content-type': 'text/plain; charset=utf-8' }).end('Jeton alınamadı.');
-    console.log('HATA:', e.message);
+    cevap.writeHead(500, { 'content-type': 'text/plain; charset=utf-8' }).end('Could not get the token.');
+    console.log('ERROR:', e.message);
     kapat(1);
   }
 });
@@ -62,6 +64,6 @@ sunucu.listen(0, '127.0.0.1', () => {
   });
   const adres = `https://accounts.google.com/o/oauth2/v2/auth?${q}`;
   writeFileSync(ADRES_DOSYASI, adres);
-  console.log('İzin adresi hazır (yetki-adres.txt). Geri dönüş bekleniyor:', geriDonus);
+  console.log('Consent address ready (yetki-adres.txt). Waiting for the redirect:', geriDonus);
 });
-setTimeout(() => { console.log('HATA: 15 dakika içinde izin gelmedi'); kapat(1); }, 15 * 60_000);
+setTimeout(() => { console.log('ERROR: no consent arrived within 15 minutes'); kapat(1); }, 15 * 60_000);

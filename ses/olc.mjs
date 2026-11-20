@@ -1,7 +1,7 @@
-// Ses ölçümü: hece/sn (ünlü sayımı ÷ konuşma süresi; iki kaynak:
-// dosyadaki ilk/son sesli an ve ElevenLabs kelime zamanları), iç duraklama toplamı (silencedetect −38 dB, ≥ 0,12 sn),
-// en uzun duraklama, entegre ses yüksekliği (LUFS), gerçek tepe (dBTP), LRA. Duyulan şey değil, ölçülen şey.
-//   node ses/olc.mjs <proje> kanca giris b1
+// Audio measurement: syllables/s (vowel count ÷ speech duration; two sources:
+// the first/last audible moment in the file and the ElevenLabs word times), total internal pause (silencedetect −38 dB, >= 0.12 s),
+// longest pause, integrated loudness (LUFS), true peak (dBTP), LRA. What is measured, not what is heard.
+//   node ses/olc.mjs <project> kanca giris b1
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -10,6 +10,7 @@ import { GECICI, proje } from '../ayar.mjs';
 
 import ffmpegYolu from 'ffmpeg-static';
 export const FF = ffmpegYolu;
+// vowel count; the vowel set is Turkish-specific (ı, ö, ü, circumflexed vowels)
 const unlu = (s) => (s.toLocaleLowerCase('tr').match(/[aeıioöuüâîû]/g) || []).length;
 const ff = (args) => spawnSync(FF, ['-hide_banner', ...args], { encoding: 'utf8' }).stderr || '';
 const f2 = (x, n = 2) => (x == null || Number.isNaN(x) ? null : +x.toFixed(n));
@@ -50,6 +51,6 @@ if (import.meta.url === `file:///${process.argv[1].replace(/\\/g, '/')}` || proc
   const OUT = path.join(DIR, 'ses', 'olcum.json');
   const eski = fs.existsSync(OUT) ? JSON.parse(fs.readFileSync(OUT, 'utf8')) : {};
   fs.writeFileSync(OUT, JSON.stringify({ ...eski, ...sonuc }, null, 1));
-  console.log('blok     hece  süre   hece/sn(dosya) (kelime) (duraksız)  duraklama  en uzun  LUFS    tepe dBTP');
+  console.log('block    syll  dur    syll/s(file)   (words)  (no pause)  pause      longest  LUFS    peak dBTP');
   for (const [id, r] of Object.entries(sonuc)) console.log(`${id.padEnd(8)} ${String(r.hece).padStart(4)} ${String(r.konusma_sure).padStart(6)}  ${String(r.hece_sn_dosya).padStart(8)}  ${String(r.hece_sn_kelime).padStart(8)}  ${String(r.hece_sn_duraksiz).padStart(8)}   ${String(r.ic_duraklama_toplam).padStart(5)} (%${(r.duraklama_orani * 100).toFixed(0)})  ${String(r.en_uzun_duraklama).padStart(5)}  ${r.lufs}  ${r.tepe_dbtp}`);
 }

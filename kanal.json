@@ -1,8 +1,8 @@
 {
- "_aciklama": "Kitin tek ayar dosyası. Kurulumda doldurulur; kod sabitleri buradan okunur. Gizli bilgi (anahtar, jeton) buraya YAZILMAZ, .env dosyasına yazılır.",
- "ad": "Kanal Adı",
- "seri": "Seri Adı",
- "dil": "tr",
+ "_aciklama": "Single settings file of the kit. Filled in during setup; code constants are read from here. Secrets (keys, tokens) never go here; they go in .env. ekran_metinleri: overrides for on-screen text (keys: chapter, closing, episode, like, subscribe, subscribed, full_video, hello, first_video_ready, setup_test, first_chapter, chain); empty means built-in text for dil (en, tr).",
+ "ad": "Channel Name",
+ "seri": "Series Name",
+ "dil": "en",
  "renkler": {
   "zemin": "#111214",
   "yuzey": "#1A1C20",
@@ -17,15 +17,7 @@
   "sayi": "JetBrains Mono Variable"
  },
  "logo": "",
- "metinler": {
-  "ders": "Ders",
-  "bolum": "BÖLÜM",
-  "kapanis": "KAPANIŞ",
-  "sonraki": "Sonraki",
-  "abone_ol": "ABONE OL",
-  "abone_olundu": "ABONE OLUNDU",
-  "begen": "BEĞEN"
- },
+ "ekran_metinleri": {},
  "ses": {
   "saglayici": "elevenlabs",
   "kimlik": "",
@@ -34,12 +26,16 @@
   "lufs": -14
  },
  "youtube": {
+  "kanal_kimligi": "",
   "oynatma_listesi": "",
   "kategori": "27",
   "etiketler": [],
-  "yayin_saatleri": ["19:00"],
+  "yayin_saatleri": [
+   "19:00"
+  ],
   "utc_farki": "+03:00",
   "yapay_zeka_beyani": false,
+  "cocuklara_ozel": null,
   "aciklama_zorunlu": []
  },
  "klasorler": {

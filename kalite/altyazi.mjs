@@ -1,8 +1,8 @@
-// Altyazı: seslendirme metninden (metin.json cümleleri) ve kelime zamanlarından (<parça>.zaman.json) SRT üretir.
-// Kurallar: satır ≤ 42 karakter, parça en çok 2 satır; parça mümkünse virgül/noktalı virgül/iki noktada biter, tek kelime
-// sona kalmaz; parça en az 1 sn, sonrakinden 40 ms önce biter. Sonda betik denetimi: altyazı metni seslendirmeyle birebir.
-// Projede ceviri-en.json varsa (TR parça sırasıyla aynı uzunlukta dizi) İngilizce SRT de aynı zaman damgalarıyla yazılır.
-//   node kalite/altyazi.mjs <proje> [parça=tam]   → projeler/<proje>/paket/altyazi.srt (+ altyazi-en.srt)
+// Subtitles: builds an SRT from the narration text (metin.json sentences) and the word timings (<part>.zaman.json).
+// Rules: line <= 42 characters, cue at most 2 lines; a cue ends at a comma/semicolon/colon where possible, a single word
+// is never left dangling at the end; a cue lasts at least 1 s and ends 40 ms before the next one. Final script check: subtitle text matches the narration exactly.
+// If the project has ceviri-en.json (an array of the same length, in the same order as the Turkish cues), an English SRT is also written with the same timestamps.
+//   node kalite/altyazi.mjs <project> [part=tam]   → projeler/<project>/paket/altyazi.srt (+ altyazi-en.srt)
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -10,21 +10,21 @@ import { fileURLToPath } from 'node:url';
 import { proje } from '../ayar.mjs';
 
 const [PROJE, PARCA = 'tam'] = process.argv.slice(2);
-if (!PROJE) { console.log('Kullanım: node kalite/altyazi.mjs <proje> [parça]'); process.exit(2); }
+if (!PROJE) { console.log('Usage: node kalite/altyazi.mjs <project> [part]'); process.exit(2); }
 const DIR = proje(PROJE), OUT = path.join(DIR, 'paket'); fs.mkdirSync(OUT, { recursive: true });
 const zf = [path.join(DIR, 'cikti', `${PARCA}.zaman.json`), path.join(DIR, `${PARCA}.zaman.json`)].find((f) => fs.existsSync(f));
-if (!zf) { console.log(`zaman dosyası yok: cikti/${PARCA}.zaman.json (ses/ses_kur.mjs üretir)`); process.exit(1); }
+if (!zf) { console.log(`timing file missing: cikti/${PARCA}.zaman.json (produced by ses/ses_kur.mjs)`); process.exit(1); }
 const Z = JSON.parse(fs.readFileSync(zf, 'utf8'));
 const M = JSON.parse(fs.readFileSync(path.join(DIR, 'metin.json'), 'utf8'));
 const zs = (s) => { const ms = Math.round(s * 1000), h = Math.floor(ms / 3600000), m = Math.floor(ms / 60000) % 60, sn = Math.floor(ms / 1000) % 60; return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(sn).padStart(2, '0')},${String(ms % 1000).padStart(3, '0')}`; };
 
 const SATIR = 42, cues = [];
-// iki satıra en dengeli bölme (her satır ≤ SATIR; virgülde kırılım 12 karakter avantajlı); sığmazsa null
+// most balanced split into two lines (each line <= SATIR; breaking after a comma gets a 12-character bonus); null if it does not fit
 const bol2 = (par) => { const m = par.join(' '); if (m.length <= SATIR) return [m]; let en = null;
   for (let k = 1; k < par.length; k++) { const a = par.slice(0, k).join(' '), b = par.slice(k).join(' '); if (a.length <= SATIR && b.length <= SATIR) { const f = Math.abs(a.length - b.length) - (/[,;]$/.test(par[k - 1]) ? 12 : 0); if (!en || f < en.f) en = { f, a, b }; } }
   return en ? [en.a, en.b] : null; };
 for (const zb of Z.bloklar || []) {
-  const mb = M.bloklar.find((b) => b.id === zb.id); if (!mb) throw new Error(`metin.json'da blok yok: ${zb.id}`);
+  const mb = M.bloklar.find((b) => b.id === zb.id); if (!mb) throw new Error(`no such block in metin.json: ${zb.id}`);
   let wi = 0;
   for (const c of mb.cumleler) {
     const ws = c.split(/\s+/), kz = zb.kelimeler.slice(wi, wi + ws.length); wi += ws.length;
@@ -44,9 +44,9 @@ for (let i = 0; i < cues.length; i++) { const c = cues[i], n = cues[i + 1]; c.t1
 fs.writeFileSync(path.join(OUT, 'altyazi.srt'), cues.map((c, i) => `${i + 1}\n${zs(c.t0)} --> ${zs(c.t1)}\n${c.metin}\n`).join('\n'), 'utf8');
 const srtMetin = cues.map((c) => c.metin.replace(/\n/g, ' ')).join(' ').replace(/\s+/g, ' ');
 const sesMetin = (Z.bloklar || []).map((zb) => M.bloklar.find((b) => b.id === zb.id).cumleler.join(' ')).join(' ').replace(/\s+/g, ' ');
-if (srtMetin !== sesMetin) throw new Error('altyazı metni seslendirme metniyle birebir değil');
+if (srtMetin !== sesMetin) throw new Error('subtitle text does not match the narration text exactly');
 const maxS = cues.length ? Math.max(...cues.map((c) => Math.max(...c.metin.split('\n').map((s) => s.length)))) : 0;
-console.log(`altyazi.srt: ${cues.length} parça, en uzun satır ${maxS} karakter; metin seslendirmeyle birebir`);
+console.log(`altyazi.srt: ${cues.length} cues, longest line ${maxS} characters; text matches the narration exactly`);
 if (fs.existsSync(path.join(DIR, 'ceviri-en.json'))) {
   const r = spawnSync(process.execPath, [path.join(path.dirname(fileURLToPath(import.meta.url)), 'altyazi_en.mjs'), PROJE], { stdio: 'inherit' });
   if (r.status) process.exit(r.status);

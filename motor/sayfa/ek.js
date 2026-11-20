@@ -1,15 +1,15 @@
-// Dikey (Shorts) ortak parçalar: künye, kanca ekran yazısı, kelime kelime altyazı, kapanış kartı.
+// Shared parts for vertical (Shorts): tag, hook on-screen text, word-by-word subtitles, closing card.
 import { katman, yazi, svgK, sv, yol, ciz, ac, R } from './bilesen.js';
-import { KANAL } from './kimlik.js';
+import { KANAL, M, BUYUK } from './kimlik.js';
 
-// üst künye: seri · ders (Mono, ikincil); bütün video boyunca
+// top tag: series · lesson (Mono, secondary colour); throughout the whole video
 export function kunye(par, tl, sure, metin) {
-  metin = metin || (KANAL.seri || KANAL.ad).toLocaleUpperCase(KANAL.dil || 'tr');
+  metin = metin || BUYUK(KANAL.seri || KANAL.ad);
   const e = document.createElement('div'); e.className = 'kunye'; e.textContent = metin; par.appendChild(e);
   return e;
 }
 
-// kanca ekran yazısı: 0. karede tam görünür; bitince yukarı kayıp söner
+// hook on-screen text: fully visible at frame 0; when it ends it slides up and fades
 export function kanca(par, tl, metin, bitis, { top = 236 } = {}) {
   const e = document.createElement('div'); e.className = 'kanca'; e.textContent = metin; e.style.top = top + 'px'; if (metin.includes('\n')) e.style.whiteSpace = 'pre-line'; par.appendChild(e);
   tl.set(e, { autoAlpha: 1 }, 0);
@@ -17,10 +17,10 @@ export function kanca(par, tl, metin, bitis, { top = 236 } = {}) {
   return e;
 }
 
-// ---- kelime kelime altyazı ----
-// Parçalar: cümle içinde 2–4 kelime, ≤ 26 karakter; virgül, noktalı virgül ve iki noktada kırılır. 0,6 sn'den kısa parça
-// (aynı cümlede, toplam ≤ 5 kelime ve ≤ 30 karakterse) sonrakiyle birleşir. Parça ilk kelimeden 0,05 sn önce açılır;
-// kelimeler söylendikçe belirir (yer baştan ayrılmış, kayma yok). Bitiş: son kelime + 0,40 sn, en geç sonraki parça − 0,01 sn.
+// ---- word-by-word subtitles ----
+// Cues: 2–4 words within a sentence, <= 26 characters; broken at a comma, semicolon or colon. A cue shorter than 0.6 s
+// merges with the next one (within the same sentence, if the total is <= 5 words and <= 30 characters). A cue opens 0.05 s before its first word;
+// words appear as they are spoken (the space is reserved up front, no shifting). End: last word + 0.40 s, at the latest the next cue − 0.01 s.
 export function parcalara(Z) {
   const out = [];
   for (let c = 0; c < Z.cumleler.length; c++) {
@@ -34,13 +34,13 @@ export function parcalara(Z) {
     }
     kapat();
   }
-  // kısa parçaları birleştir
+  // merge short cues
   for (let i = 0; i < out.length - 1; i++) {
     const a = out[i], b = out[i + 1];
     const d = a.k[a.k.length - 1].t1 - a.k[0].t0, n = a.k.length + b.k.length, uz = [...a.k, ...b.k].reduce((x, w) => x + w.w.length + 1, 0);
     if (d < 0.6 && a.c === b.c && n <= 5 && uz <= 35) { a.k = [...a.k, ...b.k]; out.splice(i + 1, 1); i--; }
   }
-  // tek kelimelik son parça (dul) öncekine eklenir, sığıyorsa
+  // a one-word last cue (a widow) is appended to the previous one, if it fits
   for (let i = 1; i < out.length; i++) {
     const a = out[i - 1], b = out[i];
     if (b.k.length === 1 && a.c === b.c && a.k.length <= 4 && [...a.k, ...b.k].reduce((x, w) => x + w.w.length + 1, 0) <= 32) { a.k = [...a.k, ...b.k]; out.splice(i, 1); i--; }
@@ -68,9 +68,9 @@ export function altyazi(par, tl, Z, { gizle = [] } = {}) {
   return k;
 }
 
-// ---- tam video kartı: kapanış cümlesinde; kapak şablonunun dikey özeti (plaka, seri şeridi, başlık, süre) ----
-// Örnek: { no: '02', ad: ['Birinci satır', 'ikinci satır'], boy: 88, sure: '12:30' }
-export function dersKarti(par, { y = 560, no: noM = '01', ad = ['Video başlığı', 'ikinci satır'], boy = 112, sure = '00:00' } = {}) {
+// ---- full-video card: in the closing sentence; a vertical summary of the cover template (plate, series strip, title, duration) ----
+// Example: { no: '02', ad: ['First line', 'second line'], boy: 88, sure: '12:30' }
+export function dersKarti(par, { y = 560, no: noM = '01', ad = ['Video title', 'second line'], boy = 112, sure = '00:00' } = {}) {
   const k = katman(par, 'ders-karti'); gsap.set(k, { autoAlpha: 0 });
   const s = svgK(k);
   const plaka = sv(s, 'rect', { x: 72, y, width: 200, height: 170, rx: 8, fill: R.metin }); gsap.set(plaka, { autoAlpha: 0, transformOrigin: '50% 50%' });
@@ -81,7 +81,7 @@ export function dersKarti(par, { y = 560, no: noM = '01', ad = ['Video başlığ
   const s2 = yazi(k, ss2, { x: 336, y: y + 92, boy: 60, ag: 800 });
   const cz = yol(s, `M72,${y + 250} L918,${y + 250}`, 'c ince');
   const satir = ad.map((t, i) => yazi(k, t, { x: 72, y: y + 300 + i * boy * 1.07, boy, ag: 800 }));
-  const tam = yazi(k, `${KANAL.metinler?.tam_video || 'TAM VİDEO'} · ${sure}`, { x: 72, y: y + 300 + ad.length * boy * 1.07 + 50, boy: 34, ag: 600, sayi: true, renk: 'ik', ls: 0.06 });
+  const tam = yazi(k, `${M('full_video')} · ${sure}`, { x: 72, y: y + 300 + ad.length * boy * 1.07 + 50, boy: 34, ag: 600, sayi: true, renk: 'ik', ls: 0.06 });
   return { k, plaka, no, serit, s1, s2, cz, satir, ad1: satir[0], ad2: satir[1], tam };
 }
 export function dersKartiGoster(tl, d, t0) {
@@ -96,20 +96,20 @@ export function dersKartiGoster(tl, d, t0) {
   return tl;
 }
 
-// ---- standart abone kapanışı: dikey ABONE OL düğmesi + imleç tıklaması (destek.js düğmesinin dikey hâli) ----
-// Tıklama kapanış cümlesindeki "abone" kelimesine kilitli; ses tarafında onaylı tik efekti aynı ana konur (kapanis_ekle.mjs).
+// ---- standard subscribe closing: a vertical SUBSCRIBE button + a cursor click (the vertical version of the destek.js button) ----
+// The click is locked to the word "abone" (Turkish for "subscribe") in the closing sentence; on the audio side the approved click effect is placed at the same moment (kapanis_ekle.mjs).
 const KIRMIZI = KANAL.renkler?.abone_dugmesi || '#FF0033', GRI = '#2E3138', IMLEC = 'M0,0 L0,36 L9,27.5 L15.5,42 L22,39 L15.6,25 L27,25 Z';
 export function aboneDugmesi(par, { x = 495, y = 1300, w = 420, h = 104 } = {}) {
   const d = document.createElement('div');
   Object.assign(d.style, { position: 'absolute', left: x - w / 2 + 'px', top: y - h / 2 + 'px', width: w + 'px', height: h + 'px', borderRadius: h / 2 + 'px', background: KIRMIZI });
   par.appendChild(d); gsap.set(d, { autoAlpha: 0 });
   const et = (txt, boy, ag) => { const e = document.createElement('div'); e.textContent = txt; Object.assign(e.style, { position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', whiteSpace: 'nowrap', lineHeight: 1, fontFamily: 'var(--baslik)', fontSize: boy + 'px', fontWeight: ag, color: R.metin }); d.appendChild(e); return e; };
-  const ol = et(KANAL.metinler?.abone_ol || 'ABONE OL', 40, 800), oldu = et(KANAL.metinler?.abone_olundu || 'ABONE OLUNDU', 34, 700); gsap.set(oldu, { autoAlpha: 0 });
+  const ol = et(M('subscribe'), 40, 800), oldu = et(M('subscribed'), 34, 700); gsap.set(oldu, { autoAlpha: 0 });
   const NS = 'http://www.w3.org/2000/svg';
   const im = document.createElementNS(NS, 'svg'); im.setAttribute('width', 44); im.setAttribute('height', 66); im.setAttribute('viewBox', '-2 -2 31 46');
   Object.assign(im.style, { position: 'absolute', left: '0px', top: '0px', overflow: 'visible' }); par.appendChild(im);
   const p = document.createElementNS(NS, 'path'); p.setAttribute('d', IMLEC); Object.entries({ fill: R.metin, stroke: R.zemin, 'stroke-width': 2, 'stroke-linejoin': 'round' }).forEach(([a, v]) => p.setAttribute(a, v)); im.appendChild(p);
-  gsap.set(im, { autoAlpha: 0, x: x + 330, y: y + 110, transformOrigin: '0% 0%' });   // altyazı kuşağına girmeden sağdan gelir
+  gsap.set(im, { autoAlpha: 0, x: x + 330, y: y + 110, transformOrigin: '0% 0%' });   // comes from the right without entering the subtitle band
   return { d, ol, oldu, im, x, y };
 }
 export function aboneGoster(tl, a, t0, tTik) {
@@ -123,8 +123,8 @@ export function aboneGoster(tl, a, t0, tTik) {
   tl.to(a.im, { x: a.x + 330, y: a.y + 90, autoAlpha: 0, duration: 0.5, ease: 'power2.in' }, tTik + 0.45);
   return tl;
 }
-// Kapanış: video kartı (üstte, y 470) + ABONE OL (altta). Z.kapanis varsa (kapanis_ekle.mjs) kartın başlangıcı kapanış cümlesinin
-// başı, tıklama "abone" kelimesi; yoksa yalnız video kartı.
+// Closing: video card (at the top, y 470) + SUBSCRIBE (at the bottom). If Z.kapanis exists (kapanis_ekle.mjs), the card starts at the start of the closing
+// sentence and the click lands on the word "abone"; otherwise only the video card.
 export function kapanis(par, tl, Z, { t0, kart = {} } = {}) {
   const k = Z.kapanis;
   const dk = dersKarti(par, { y: k ? 470 : 560, ...kart });

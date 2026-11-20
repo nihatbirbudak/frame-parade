@@ -1,5 +1,5 @@
-// Yüklenmiş bir videoya İngilizce başlık/açıklama (localizations.en) ve EN altyazı ekler.
-// Kullanım: node youtube/en-ekle.mjs <paket klasörü> <videoId> [--yes]   (--yes yoksa prova)
+// Adds an English title/description (localizations.en) and EN subtitles to an already uploaded video.
+// Usage: node youtube/en-ekle.mjs <package folder> <videoId> [--yes]   (a dry run without --yes)
 import { readFileSync, existsSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { api, erisimJetonu, KOK } from './api.mjs';
@@ -13,12 +13,12 @@ const baslikEn = oku('baslik-en.txt'), aciklamaEn = oku('aciklama-en.txt');
 const srtEn = existsSync(join(paket, 'altyazi-en.srt')) ? join(paket, 'altyazi-en.srt') : null;
 
 const v = (await api(`https://www.googleapis.com/youtube/v3/videos?part=snippet,localizations&id=${videoId}`)).items?.[0];
-if (!v) { console.log('Video bulunamadı:', videoId); process.exit(1); }
+if (!v) { console.log('Video not found:', videoId); process.exit(1); }
 const mevcut = await api(`https://www.googleapis.com/youtube/v3/captions?part=snippet&videoId=${videoId}`);
 const enAltyaziVar = (mevcut.items || []).some(c => c.snippet.language === 'en');
-console.log(`${GERCEK ? 'GERÇEK' : 'PROVA'} · ${videoId} · ${v.snippet.title}`);
-console.log(`  EN başlık: ${baslikEn || '—'} (şu an: ${v.localizations?.en?.title || 'yok'})`);
-console.log(`  EN açıklama: ${aciklamaEn ? aciklamaEn.length + ' karakter' : '—'} · EN altyazı: ${srtEn ? (enAltyaziVar ? 'zaten var, atlanır' : 'eklenecek') : 'dosya yok'}`);
+console.log(`${GERCEK ? 'REAL' : 'DRY RUN'} · ${videoId} · ${v.snippet.title}`);
+console.log(`  EN title: ${baslikEn || '—'} (currently: ${v.localizations?.en?.title || 'none'})`);
+console.log(`  EN description: ${aciklamaEn ? aciklamaEn.length + ' characters' : '—'} · EN subtitles: ${srtEn ? (enAltyaziVar ? 'already there, skipped' : 'will be added') : 'no file'}`);
 if (!GERCEK) process.exit(0);
 
 if (baslikEn || aciklamaEn) {
@@ -31,7 +31,7 @@ if (baslikEn || aciklamaEn) {
       localizations: { ...(v.localizations || {}), en: { title: baslikEn || s.title, description: aciklamaEn || s.description } },
     }),
   });
-  console.log('  ✓ EN başlık ve açıklama');
+  console.log('  ✓ EN title and description');
 }
 if (srtEn && !enAltyaziVar) {
   const sinir = 'kit' + Date.now();
@@ -42,5 +42,5 @@ if (srtEn && !enAltyaziVar) {
   const r = await fetch('https://www.googleapis.com/upload/youtube/v3/captions?part=snippet&uploadType=multipart', {
     method: 'POST', headers: { authorization: `Bearer ${await erisimJetonu()}`, 'content-type': `multipart/related; boundary=${sinir}` }, body: govde,
   });
-  console.log(r.ok ? '  ✓ EN altyazı' : `  HATA EN altyazı ${r.status}: ${(await r.text()).slice(0, 200)}`);
+  console.log(r.ok ? '  ✓ EN subtitles' : `  ERROR EN subtitles ${r.status}: ${(await r.text()).slice(0, 200)}`);
 }
