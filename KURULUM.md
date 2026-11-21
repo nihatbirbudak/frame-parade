@@ -28,7 +28,11 @@ Node.js must satisfy package.json: version 20 or newer; prefer a currently maint
 
     node -e "const fs=require('node:fs'); const s=fs.statfsSync('.'); console.log(JSON.stringify({platform:process.platform,arch:process.arch,node:process.version,freeBytes:s.bavail*s.bsize}))"
 
-If a check fails, report what is unknown. For missing tools, identify the operating system first and use the official installation pages below. Explain one step at a time; do not invent commands or silently install software.
+If a check fails, report what is unknown. For a missing tool, identify the operating system first. Then tell the user, in plain words, which tool is missing and what this kit uses it for, and ask: "Shall I install it?" Never install silently.
+
+- If the user agrees and the system has an official package manager, install with it and show the command before running it. On Windows that is `winget`, for example `winget install --id OpenJS.NodeJS.LTS -e` and `winget install --id Git.Git -e`. On macOS, use Homebrew only if it is already installed, for example `brew install node` and `brew install git`. On Linux, use the distribution's own package manager. The installer may open its own permission window; the user approves it there.
+- If no package manager is available, or the install fails, guide the user through the official installation pages below one step at a time. Do not invent commands.
+- If the user prefers to install it themselves, give them the official page and wait.
 
 | System | Node.js and npm | Git |
 |---|---|---|
